@@ -1,0 +1,44 @@
+# Dependency directories
+node_modules/
+
+# Environment variables
+.env
+.env.example
+
+# Build output
+dist/
+build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Coverage reports
+coverage/
+
+# IDE/editor files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Misc
+*.tgz
+*.zip
+*.gz
+
+# Local configuration
+*.local
+
+# SQLite / local DB files (if any)
+*.sqlite3
+*.db
+
+# Gemeni IDE metadata (generated workspace data)
+.gemini/
