@@ -2,7 +2,7 @@ import api from './axios'
 
 export const getCases = async (params) => {
   const response = await api.get('/cases', { params })
-  return response.data
+  return response.data.data || response.data
 }
 
 export const getCaseById = async (id) => {

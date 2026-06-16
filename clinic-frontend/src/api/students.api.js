@@ -2,7 +2,7 @@ import api from './axios'
 
 export const getStudents = async (params) => {
   const response = await api.get('/students', { params })
-  return response.data
+  return response.data.data || response.data
 }
 
 export const getStudentById = async (id) => {
@@ -21,6 +21,6 @@ export const updateStudent = async ({ id, ...data }) => {
 }
 
 export const getStudentMedicalHistory = async (id) => {
-  const response = await api.get(`/students/${id}/history`)
-  return response.data
+  const response = await api.get('/cases', { params: { student_id: id } })
+  return response.data.data || response.data
 }
