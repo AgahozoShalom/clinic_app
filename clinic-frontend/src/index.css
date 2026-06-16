@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-brand:         #4A8060;
+    --color-brand-dark:    #2E5C40;
+    --color-brand-light:   #EAF3EE;
+
+    --color-accent:        #E09C46;
+    --color-accent-light:  #FDF3E3;
+
+    --color-text-primary:  #4B3F2B;
+    --color-text-muted:    #6D8662;
+
+    --color-bg:            #F5F7F5;
+    --color-surface:       #FFFFFF;
+    --color-border:        #D8E4DC;
+
+    --color-success:       #2E6648;
+    --color-success-bg:    #EAF3EE;
+    --color-warning:       #A0640A;
+    --color-warning-bg:    #FDF3E3;
+    --color-danger:        #A03030;
+    --color-danger-bg:     #FAEAEA;
+    --color-info:          #47795D;
+    --color-info-bg:       #EAF3EE;
+
+    --background: 120 14% 96%;
+    --foreground: 36 27% 23%;
+    --card: 0 0% 100%;
+    --card-foreground: 36 27% 23%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 36 27% 23%;
+    --primary: 144 26% 39%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 144 32% 93%;
+    --secondary-foreground: 144 26% 39%;
+    --muted: 104 16% 45%;
+    --muted-foreground: 104 16% 45%;
+    --accent: 33 73% 57%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 54% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 140 16% 88%;
+    --input: 140 16% 88%;
+    --ring: 144 26% 39%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-bg text-text-primary font-sans antialiased;
+  }
+}
