@@ -40,7 +40,7 @@ export function StudentDetail() {
             </div>
             <h2 className="text-xl font-bold text-text-primary">{student.full_name}</h2>
             <p className="text-text-muted">{student.admission_code}</p>
-            
+
             <div className="mt-6 border-t border-border pt-4 grid grid-cols-2 gap-4 text-left">
               <div>
                 <div className="text-xs text-text-muted uppercase tracking-wider">Class</div>
@@ -52,16 +52,16 @@ export function StudentDetail() {
               </div>
               <div>
                 <div className="text-xs text-text-muted uppercase tracking-wider">DOB</div>
-                <div className="font-medium">{new Date(student.date_of_birth).toLocaleDateString()}</div>
+                <div className="font-medium">{new Date(student.dob).toLocaleDateString('en-GB')}</div>
               </div>
               <div>
-                <div className="text-xs text-text-muted uppercase tracking-wider">House</div>
-                <div className="font-medium">{student.house || 'N/A'}</div>
+                <div className="text-xs text-text-muted uppercase tracking-wider">Family Name</div>
+                <div className="font-medium">{student.family_name}</div>
               </div>
             </div>
             <div className="mt-4 text-left">
-              <div className="text-xs text-text-muted uppercase tracking-wider">Parent Contact</div>
-              <div className="font-medium">{student.parent_contact || 'N/A'}</div>
+              <div className="text-xs text-text-muted uppercase tracking-wider">Mother's Contact</div>
+              <div className="font-medium">{student.mother_phone}</div>
             </div>
           </div>
 
@@ -97,18 +97,18 @@ export function StudentDetail() {
             <div className="p-4 border-b border-border bg-[#FDFEFC] flex justify-between items-center">
               <h3 className="font-semibold text-text-primary">Clinic History</h3>
             </div>
-            
+
             <div className="flex-1 overflow-y-auto">
               {!history?.length ? (
                 <EmptyState icon={ClipboardList} title="No history" description="This student hasn't visited the clinic yet." />
               ) : (
                 <div className="divide-y divide-border">
                   {history.map(c => (
-                    <div key={c.id} className="p-4 hover:bg-[#F0F5F2] transition-colors">
+                    <div key={c.case_id || c.id} className="p-4 hover:bg-[#F0F5F2] transition-colors">
                       <div className="flex justify-between items-start mb-2">
                         <div className="flex items-center gap-3">
-                          <span className="font-medium text-brand cursor-pointer hover:underline" onClick={() => navigate(`/cases/${c.id}`)}>
-                            Case #{c.id}
+                          <span className="font-medium text-brand cursor-pointer hover:underline" onClick={() => navigate(`/cases/${c.case_id || c.id}`)}>
+                            Case #{c.case_id || c.id}
                           </span>
                           <StatusPill status={c.status} />
                         </div>

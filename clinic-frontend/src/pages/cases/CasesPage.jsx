@@ -78,14 +78,17 @@ export function CasesPage() {
               </thead>
               <tbody className="divide-y divide-border">
                 {cases.map(c => (
-                  <tr key={c.id} className="hover:bg-[#F0F5F2] transition-colors">
-                    <td className="px-4 py-3 font-mono text-text-muted">#{c.id}</td>
-                    <td className="px-4 py-3 font-medium text-text-primary">{c.student_full_name}</td>
+                  <tr key={c.case_id || c.id} className={`transition-colors ${c.needs_doctor ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-[#F0F5F2]'}`}>
+                    <td className="px-4 py-3 font-mono text-text-muted">#{c.case_id || c.id}</td>
+                    <td className="px-4 py-3 font-medium text-text-primary">
+                      {c.student_full_name}
+                      {c.needs_doctor && <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-danger/10 text-danger border border-danger/20 uppercase">Escalated</span>}
+                    </td>
                     <td className="px-4 py-3"><StatusPill status={c.status} /></td>
                     <td className="px-4 py-3 text-text-muted">{formatRelative(c.created_at)}</td>
                     <td className="px-4 py-3 text-text-muted">{c.opened_by}</td>
                     <td className="px-4 py-3 text-right">
-                      <Button variant="outline" size="sm" onClick={() => navigate(`/cases/${c.id}`)}>View</Button>
+                      <Button variant="outline" size="sm" onClick={() => navigate(`/cases/${c.case_id || c.id}`)}>View</Button>
                     </td>
                   </tr>
                 ))}

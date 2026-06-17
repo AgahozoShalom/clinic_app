@@ -4,7 +4,7 @@ const casesService = require('../services/cases.service');
 
 const createCase = async (req, res, next) => {
   try {
-    const { student_id, nurse_notes } = req.body;
+    const { student_id, nurse_notes, complaint, temperature, blood_pressure, heart_rate, respiratory_rate, severity } = req.body;
 
     // Validate student exists
     const studentCheck = await db.query('SELECT id FROM students WHERE id = $1', [student_id]);
@@ -13,8 +13,8 @@ const createCase = async (req, res, next) => {
     }
 
     const result = await db.query(
-      'INSERT INTO cases (student_id, created_by, nurse_notes, status) VALUES ($1, $2, $3, $4) RETURNING id, student_id, status, created_by, nurse_notes, created_at',
-      [student_id, req.user.id, nurse_notes, 'open']
+      'INSERT INTO cases (student_id, created_by, nurse_notes, complaint, temperature, blood_pressure, heart_rate, respiratory_rate, severity, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id, student_id, status, created_by, nurse_notes, created_at',
+      [student_id, req.user.id, nurse_notes, complaint, temperature, blood_pressure, heart_rate, respiratory_rate, severity || 'low', 'open']
     );
 
     res.status(201).json(result.rows[0]);
@@ -114,10 +114,82 @@ const getOpenQueue = async (req, res, next) => {
   }
 };
 
+const addFindings = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { notes } = req.body;
+    const result = await db.query(
+      'INSERT INTO case_findings (case_id, added_by, added_by_role, findings) VALUES ($1, $2, $3, $4) RETURNING *',
+      [id, req.user.id, req.user.role, notes]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const addLabTest = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { test_name } = req.body;
+    const result = await db.query(
+      'INSERT INTO lab_tests (case_id, requested_by, test_name, status) VALUES ($1, $2, $3, $4) RETURNING *',
+      [id, req.user.id, test_name, 'requested']
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const addMedication = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { drug_name, dosage, instructions } = req.body;
+    const result = await db.query(
+      'INSERT INTO medications (case_id, prescribed_by, prescribed_by_role, drug_name, dosage, instructions) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [id, req.user.id, req.user.role, drug_name, dosage, instructions]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const escalateCase = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    // Flag the case
+    await db.query('UPDATE cases SET needs_doctor = true WHERE id = $1', [id]);
+    
+    // Add finding if notes are provided
+    if (req.body.notes) {
+      await db.query(
+        'INSERT INTO case_findings (case_id, added_by, added_by_role, findings) VALUES ($1, $2, $3, $4)',
+        [id, req.user.id, 'doctor', `[ESCALATED TO DOCTOR] ${req.body.notes}`]
+      );
+    } else {
+      await db.query(
+        'INSERT INTO case_findings (case_id, added_by, added_by_role, findings) VALUES ($1, $2, $3, $4)',
+        [id, req.user.id, 'doctor', `[ESCALATED TO DOCTOR] Case requires doctor attention.`]
+      );
+    }
+
+    res.status(200).json({ status: 'success', message: 'Case escalated to doctor' });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   createCase,
   getCases,
   getCaseById,
   closeCase,
   getOpenQueue,
+  addFindings,
+  addLabTest,
+  addMedication,
+  escalateCase,
 };

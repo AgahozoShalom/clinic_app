@@ -35,3 +35,13 @@ export const uploadStudents = async (file) => {
   })
   return response.data
 }
+
+export const deleteStudent = async (id) => {
+  const response = await api.delete(`/students/${id}`)
+  return response.data
+}
+
+export const deleteAllStudents = async () => {
+  const response = await api.delete('/students/all')
+  return response.data
+}
