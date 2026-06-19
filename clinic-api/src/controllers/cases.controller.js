@@ -87,7 +87,7 @@ const closeCase = async (req, res, next) => {
     }
 
     const currentStatus = caseCheck.rows[0].status;
-    if (currentStatus !== 'open' || currentStatus !== 'pending_transfer') {
+    if (currentStatus !== 'open' && currentStatus !== 'pending_transfer') {
       throw new AppError('Conflict: Case is not open or pending transfer', 409);
     }
 

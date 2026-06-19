@@ -164,7 +164,7 @@ export function CaseDetail() {
             </div>
           </div>
 
-          {c.status === 'open' && (isDoctor || isNurse) && (
+          {(c.status === 'open' || c.status === 'pending_transfer') && (isDoctor || isNurse) && (
             <div className="bg-surface border border-border rounded-xl p-5 shadow-sm space-y-3">
               <Button 
                 variant="outline" 
@@ -208,8 +208,8 @@ export function CaseDetail() {
               <Button 
                 className="w-full bg-brand text-white hover:bg-brand-dark"
                 onClick={() => closeMutation.mutate(id)}
-                disabled={closeMutation.isPending || (isNurse && (c.needs_doctor || c.lab_tests?.some(l => !l.results)))}
-                title={isNurse && (c.needs_doctor || c.lab_tests?.some(l => !l.results)) ? "Cannot close case with pending labs or doctor review" : ""}
+                disabled={closeMutation.isPending || (c.lab_tests?.some(l => !l.results) || false) || (isNurse && c.needs_doctor)}
+                title={(c.lab_tests?.some(l => !l.results) || false) ? "Cannot close case with pending labs" : (isNurse && c.needs_doctor) ? "Cannot close escalated case" : ""}
               >
                 {closeMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 Close Case
@@ -232,7 +232,7 @@ export function CaseDetail() {
               <h3 className="font-semibold text-text-primary">Clinical Feed</h3>
             </div>
             <div className="p-0">
-              {c.findings?.length > 0 || c.lab_tests?.length > 0 || c.medications?.length > 0 ? (
+              {c.findings?.length > 0 || c.lab_tests?.length > 0 || c.medications?.length > 0 || c.transfer || c.status === 'closed' ? (
                 <div className="divide-y divide-border">
                   {c.findings?.map((f, i) => (
                     <div key={`f-${i}`} className="p-4 flex gap-4">
@@ -240,8 +240,8 @@ export function CaseDetail() {
                         <FileText className="w-4 h-4" />
                       </div>
                       <div>
-                        <div className="font-medium text-text-primary text-sm mb-1">Clinical Finding <span className="text-text-muted font-normal">by {f.created_by}</span></div>
-                        <div className="text-sm text-text-primary whitespace-pre-wrap">{f.notes}</div>
+                        <div className="font-medium text-text-primary text-sm mb-1">Clinical Finding <span className="text-text-muted font-normal">by {f.added_by_name}</span></div>
+                        <div className="text-sm text-text-primary whitespace-pre-wrap">{f.findings}</div>
                         <div className="text-xs text-text-muted mt-2">{formatRelative(f.created_at)}</div>
                       </div>
                     </div>
@@ -270,6 +270,30 @@ export function CaseDetail() {
                       </div>
                     </div>
                   ))}
+                  {c.transfer && (
+                    <div className="p-4 flex gap-4">
+                      <div className="mt-1 bg-red-100 p-2 rounded-full h-8 w-8 flex items-center justify-center text-red-600">
+                        <Ambulance className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-text-primary text-sm mb-1">External Transfer <StatusPill status={c.transfer.status} className="ml-2 scale-90 origin-left" /> <span className="text-text-muted font-normal">by {c.transfer.initiated_by_name}</span></div>
+                        <div className="text-sm text-text-primary mt-1">To: {c.transfer.hospital_name}</div>
+                        {c.transfer.reason && <div className="text-sm text-text-primary mt-1">Reason: {c.transfer.reason}</div>}
+                        <div className="text-xs text-text-muted mt-2">{formatRelative(c.transfer.created_at)}</div>
+                      </div>
+                    </div>
+                  )}
+                  {c.status === 'closed' && c.closed_by_name && (
+                    <div className="p-4 flex gap-4">
+                      <div className="mt-1 bg-gray-100 p-2 rounded-full h-8 w-8 flex items-center justify-center text-gray-600">
+                        <Activity className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-text-primary text-sm mb-1">Case Closed <span className="text-text-muted font-normal">by {c.closed_by_name}</span></div>
+                        <div className="text-xs text-text-muted mt-2">{formatRelative(c.closed_at)}</div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="p-8 text-center text-text-muted">
@@ -319,7 +343,7 @@ export function CaseDetail() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <Button variant="outline" onClick={() => setTransferDialog(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={() => transferMutation.mutate({ id, hospital, reason })} disabled={!hospital || !reason}>
+            <Button variant="destructive" onClick={() => transferMutation.mutate({ id, hospital_name: hospital, reason })} disabled={!hospital || !reason}>
               Request Transfer
             </Button>
           </div>

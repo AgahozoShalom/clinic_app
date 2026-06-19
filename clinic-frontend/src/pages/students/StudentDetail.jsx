@@ -5,7 +5,7 @@ import { getStudentById, getStudentMedicalHistory } from '@/api/students.api'
 import { StatusPill } from '@/components/shared/StatusPill'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/shared/EmptyState'
-import { ArrowLeft, User, ClipboardList, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, User, ClipboardList, AlertTriangle, Stethoscope } from 'lucide-react'
 import { formatRelative } from '@/utils/formatDate'
 
 export function StudentDetail() {
@@ -104,23 +104,44 @@ export function StudentDetail() {
               ) : (
                 <div className="divide-y divide-border">
                   {history.map(c => (
-                    <div key={c.case_id || c.id} className="p-4 hover:bg-[#F0F5F2] transition-colors">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex items-center gap-3">
-                          <span className="font-medium text-brand cursor-pointer hover:underline" onClick={() => navigate(`/cases/${c.case_id || c.id}`)}>
-                            Case #{c.case_id || c.id}
-                          </span>
-                          <StatusPill status={c.status} />
-                        </div>
-                        <span className="text-sm text-text-muted">{formatRelative(c.created_at)}</span>
+                    <div key={c.case_id || c.id} className="p-5 hover:bg-[#F0F5F2] transition-colors flex gap-4">
+                      <div className="mt-1 bg-brand-light p-2 rounded-full h-10 w-10 flex items-center justify-center text-brand shrink-0 shadow-sm border border-brand/20">
+                        <Stethoscope className="w-5 h-5" />
                       </div>
-                      <p className="text-sm text-text-primary mt-1 line-clamp-2">
-                        <span className="font-medium text-text-muted">Complaint: </span>
-                        {c.complaint}
-                      </p>
-                      <div className="mt-3 flex gap-4 text-xs text-text-muted">
-                        <span>Severity: {c.severity}</span>
-                        <span>Opened by: {c.opened_by}</span>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start mb-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-text-primary text-base cursor-pointer hover:text-brand hover:underline" onClick={() => navigate(`/cases/${c.case_id || c.id}`)}>
+                              Case #{c.case_id || c.id}
+                            </span>
+                            <StatusPill status={c.status} className="scale-90 origin-left" />
+                          </div>
+                          <span className="text-sm text-text-muted">{formatRelative(c.created_at)}</span>
+                        </div>
+                        <div className="text-sm text-text-primary bg-[#F5F7F5] p-3 rounded-lg border border-border mt-3 mb-3">
+                          <span className="font-medium text-text-muted">Chief Complaint: </span>
+                          {c.complaint}
+                        </div>
+                        
+                        {c.nurse_notes && (
+                          <div className="text-sm text-text-primary mb-3">
+                            <span className="font-medium text-text-muted block mb-1">Nurse Notes:</span>
+                            <span className="whitespace-pre-wrap">{c.nurse_notes}</span>
+                          </div>
+                        )}
+
+                        <div className="flex flex-wrap gap-2 text-xs text-text-primary">
+                          {c.severity && <span className="bg-gray-100 px-2 py-1 rounded-md border border-gray-200"><span className="text-text-muted font-medium">Severity:</span> <span className="uppercase font-medium">{c.severity}</span></span>}
+                          {c.temperature && <span className="bg-orange-50 px-2 py-1 rounded-md border border-orange-100 text-orange-800"><span className="opacity-70 font-medium">Temp:</span> {c.temperature}°C</span>}
+                          {c.blood_pressure && <span className="bg-red-50 px-2 py-1 rounded-md border border-red-100 text-red-800"><span className="opacity-70 font-medium">BP:</span> {c.blood_pressure}</span>}
+                          {c.heart_rate && <span className="bg-pink-50 px-2 py-1 rounded-md border border-pink-100 text-pink-800"><span className="opacity-70 font-medium">HR:</span> {c.heart_rate} bpm</span>}
+                          {c.respiratory_rate && <span className="bg-blue-50 px-2 py-1 rounded-md border border-blue-100 text-blue-800"><span className="opacity-70 font-medium">Resp:</span> {c.respiratory_rate}/min</span>}
+                        </div>
+
+                        <div className="mt-4 pt-3 border-t border-border flex justify-between text-xs text-text-muted">
+                          <span><span className="font-medium">Opened by:</span> {c.opened_by}</span>
+                          {c.closed_by_name && <span><span className="font-medium">Closed by:</span> {c.closed_by_name} ({formatRelative(c.closed_at)})</span>}
+                        </div>
                       </div>
                     </div>
                   ))}

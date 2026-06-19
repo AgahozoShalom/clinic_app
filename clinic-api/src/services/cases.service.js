@@ -4,11 +4,11 @@ const { AppError } = require('../middlewares/errorHandler');
 const getCaseDetails = async (caseId) => {
   const caseResult = await db.query(`
     SELECT
-      c.id AS case_id, c.status, c.nurse_notes, c.complaint, c.temperature, c.blood_pressure, c.heart_rate, c.respiratory_rate, c.severity, c.needs_doctor, c.created_at,
+      c.id AS case_id, c.status, c.nurse_notes, c.complaint, c.temperature, c.blood_pressure, c.heart_rate, c.respiratory_rate, c.severity, c.needs_doctor, c.created_at, c.closed_at,
       s.id AS "student.id", s.admission_code AS "student.admission_code", s.first_name AS "student.first_name",
       s.last_name AS "student.last_name", s.grade AS "student.grade", s.class AS "student.class",
       s.mother_name AS "student.mother_name", s.mother_phone AS "student.mother_phone",
-      u_open.name AS opened_by,
+      u_open.name AS opened_by, u_close.name AS closed_by_name,
       (SELECT COALESCE(JSON_AGG(f ORDER BY f.created_at DESC), '[]') FROM (
         SELECT cf.id, cf.added_by_role, cf.findings, u.name AS added_by_name, cf.created_at
         FROM case_findings cf
@@ -26,13 +26,15 @@ const getCaseDetails = async (caseId) => {
         WHERE m.case_id = c.id
       ) m) AS medications,
       (SELECT ROW_TO_JSON(tr) FROM (
-        SELECT t.id, t.hospital_name, t.reason, t.status, t.created_at
+        SELECT t.id, t.hospital_name, t.reason, t.status, t.created_at, u.name AS initiated_by_name
         FROM transfers t
+        JOIN users u ON u.id = t.initiated_by
         WHERE t.case_id = c.id
       ) tr) AS transfer
     FROM cases c
     JOIN students s ON s.id = c.student_id
     JOIN users u_open ON u_open.id = c.created_by
+    LEFT JOIN users u_close ON u_close.id = c.closed_by
     WHERE c.id = $1
   `, [caseId]);
 
@@ -54,7 +56,9 @@ const getCaseDetails = async (caseId) => {
     severity: row.severity,
     needs_doctor: row.needs_doctor,
     created_at: row.created_at,
+    closed_at: row.closed_at,
     opened_by: row.opened_by,
+    closed_by_name: row.closed_by_name,
     student: {
       id: row['student.id'],
       admission_code: row['student.admission_code'],
