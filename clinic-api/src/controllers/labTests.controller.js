@@ -84,9 +84,31 @@ const getPendingLabTests = async (req, res, next) => {
   }
 };
 
+const getCompletedLabTests = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+    const offset = (page - 1) * limit;
+
+    const countResult = await db.query('SELECT COUNT(*) FROM v_completed_lab_tests');
+    const total = parseInt(countResult.rows[0].count, 10);
+
+    const result = await db.query('SELECT * FROM v_completed_lab_tests ORDER BY fulfilled_at DESC LIMIT $1 OFFSET $2', [limit, offset]);
+
+    res.status(200).json({
+      data: result.rows,
+      total,
+      page: parseInt(page, 10),
+      limit: parseInt(limit, 10),
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   createLabTest,
   getLabTestsForCase,
   updateLabTestResults,
   getPendingLabTests,
+  getCompletedLabTests,
 };

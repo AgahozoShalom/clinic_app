@@ -31,11 +31,12 @@ const errorHandler = (err, req, res, next) => {
   }
 
   if (err.name === 'ZodError') {
+    const issues = err.issues || err.errors || [];
     return res.status(400).json({
       status: 'error',
       code: 400,
       message: 'Validation failed',
-      errors: err.errors.map(e => ({ field: e.path.join('.'), message: e.message }))
+      errors: issues.map(e => ({ field: e.path ? e.path.join('.') : 'unknown', message: e.message }))
     });
   }
 
