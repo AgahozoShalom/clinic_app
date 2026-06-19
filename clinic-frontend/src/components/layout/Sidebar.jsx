@@ -1,83 +1,116 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, Users, UserPlus, FileText, Beaker, LogOut } from 'lucide-react'
-import { useAuth, useRole } from '@/hooks'
-import { cn } from '@/utils'
+import { Settings, ChevronDown, ChevronLeft, ChevronRight, Trees } from 'lucide-react'
+
+// Helper to generate calendar days for the current month
+function getCalendarDays() {
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = today.getMonth()
+  
+  const firstDay = new Date(year, month, 1)
+  const lastDay = new Date(year, month + 1, 0)
+  
+  const daysInMonth = lastDay.getDate()
+  const startingDayOfWeek = firstDay.getDay() // 0 = Sunday
+  
+  const days = []
+  
+  // Previous month padding
+  const prevMonthLastDay = new Date(year, month, 0).getDate()
+  for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+    days.push({ day: prevMonthLastDay - i, isCurrentMonth: false })
+  }
+  
+  // Current month
+  for (let i = 1; i <= daysInMonth; i++) {
+    days.push({ day: i, isCurrentMonth: true, isToday: i === today.getDate() })
+  }
+  
+  // Next month padding
+  const remainingCells = 42 - days.length // 6 rows of 7
+  for (let i = 1; i <= remainingCells; i++) {
+    days.push({ day: i, isCurrentMonth: false })
+  }
+  
+  return {
+    monthName: firstDay.toLocaleString('default', { month: 'long' }),
+    year,
+    days
+  }
+}
 
 export function Sidebar({ mobile, onClose }) {
-  const { logout } = useAuth()
-  const { role, isNurse, isDoctor, isLab, isAdmin } = useRole()
-
-  const links = []
-
-  if (isAdmin) {
-    links.push({ to: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' })
-    links.push({ to: '/admin/staff', icon: Users, label: 'Staff' })
-    links.push({ to: '/students', icon: UserPlus, label: 'Students' })
-    links.push({ to: '/cases', icon: FileText, label: 'All Cases' })
-  } else if (isNurse) {
-    links.push({ to: '/nurse/dashboard', icon: LayoutDashboard, label: 'Dashboard' })
-    links.push({ to: '/students', icon: Users, label: 'Students' })
-    links.push({ to: '/cases', icon: FileText, label: 'Cases' })
-  } else if (isDoctor) {
-    links.push({ to: '/doctor/dashboard', icon: LayoutDashboard, label: 'Dashboard' })
-    links.push({ to: '/students', icon: Users, label: 'Students' })
-    links.push({ to: '/cases', icon: FileText, label: 'Cases' })
-  } else if (isLab) {
-    links.push({ to: '/lab/dashboard', icon: Beaker, label: 'Lab Queue' })
-  }
-
-  const roleLabels = {
-    nurse: 'Nurse',
-    doctor: 'Doctor',
-    lab_technician: 'Lab Technician',
-    admin: 'Administrator'
-  }
+  const calendar = getCalendarDays()
+  const weekDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
 
   return (
-    <div className="flex h-full flex-col bg-surface border-r border-border w-60">
-      <div className="p-6 pb-2">
-        <h2 className="text-xl font-bold text-brand">Clinic<span className="text-accent">Care</span></h2>
-        <div className="mt-2 inline-flex items-center rounded-full bg-brand-light px-2.5 py-0.5 text-xs font-semibold text-brand">
-          {roleLabels[role] || 'Staff'}
+    <div className="flex h-full flex-col bg-white border-r border-gray-100 w-[260px] font-sans shadow-[2px_0_10px_rgba(0,0,0,0.02)] z-50">
+      
+      {/* Brand Logo Box */}
+      <div className="p-4">
+        <div className="bg-[#F8F9FA] rounded-xl p-4 flex items-center gap-3 border border-gray-100/50">
+          <div className="w-10 h-10 rounded bg-[#E8F0EA] flex items-center justify-center text-[#4A8060] shrink-0 shadow-sm">
+            <Trees className="w-6 h-6" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[11px] font-bold tracking-widest text-gray-800 leading-tight">
+              AGAHOZO<br/>SHALOM<br/>YOUTH VILLAGE
+            </span>
+            <span className="text-[10px] text-gray-500 mt-0.5 font-medium">CLINIC APP</span>
+          </div>
         </div>
       </div>
-      
-      <div className="flex-1 overflow-y-auto py-4">
-        <nav className="space-y-1 px-3">
-          {links.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              onClick={onClose}
-              className={({ isActive }) => cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
-                isActive 
-                  ? "bg-brand-light text-brand font-medium relative overflow-hidden" 
-                  : "text-text-muted hover:bg-[#F0F5F2] hover:text-text-primary"
-              )}
-            >
-              {({ isActive }) => (
-                <>
-                  {isActive && <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-brand" />}
-                  <link.icon className="h-4 w-4" />
-                  {link.label}
-                </>
-              )}
-            </NavLink>
+
+      <div className="flex-1 overflow-y-auto custom-scrollbar"></div>
+
+      {/* Mini Calendar */}
+      <div className="px-5 py-4 border-t border-gray-100/50">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-[13px] font-semibold text-gray-800 uppercase tracking-wide">
+            {calendar.monthName} {calendar.year}
+          </h3>
+          <div className="flex items-center gap-0.5 text-gray-400">
+            <button className="p-1 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors">
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button className="p-1 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors">
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-7 gap-y-2 mb-2 text-center">
+          {weekDays.map(day => (
+            <div key={day} className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">{day}</div>
           ))}
-        </nav>
+        </div>
+        
+        <div className="grid grid-cols-7 gap-y-1.5 text-center">
+          {calendar.days.map((d, i) => (
+            <div 
+              key={i} 
+              className={`text-[12px] flex items-center justify-center w-6 h-6 mx-auto rounded-full transition-colors
+                ${d.isCurrentMonth ? 'text-gray-700 font-medium' : 'text-gray-300 font-normal'}
+                ${d.isToday ? 'bg-[#0052CC] text-white font-semibold shadow-sm' : 'hover:bg-gray-100 cursor-pointer'}
+              `}
+            >
+              {d.day}
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="p-4 border-t border-border">
-        <button
-          onClick={logout}
-          className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-text-muted hover:bg-[#F0F5F2] hover:text-text-primary transition-colors"
-        >
-          <LogOut className="h-4 w-4" />
-          Sign out
+      {/* Theme Switcher */}
+      <div className="p-4 border-t border-gray-100/50">
+        <button className="w-full flex items-center justify-between bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-gray-50 transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+          <div className="flex items-center gap-2.5">
+            <Settings className="w-[15px] h-[15px] text-gray-400" />
+            <span>Light Theme</span>
+          </div>
+          <ChevronDown className="w-4 h-4 text-gray-400" />
         </button>
       </div>
+
     </div>
   )
 }
