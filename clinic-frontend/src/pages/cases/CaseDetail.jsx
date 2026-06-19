@@ -191,20 +191,25 @@ export function CaseDetail() {
                 variant="outline" 
                 className="w-full justify-start text-left text-brand hover:bg-brand-light hover:text-brand-dark"
                 onClick={() => setEscalateDialog(true)}
+                disabled={isNurse && (c.lab_tests?.some(l => !l.results) || false)}
+                title={isNurse && (c.lab_tests?.some(l => !l.results) || false) ? "Cannot escalate before lab results are ready" : ""}
               >
                 <Stethoscope className="w-4 h-4 mr-2" /> Send to Doctor
               </Button>
-              <Button 
-                variant="outline" 
-                className="w-full justify-start text-left text-danger hover:bg-danger-bg hover:text-danger border-danger/30"
-                onClick={() => setTransferDialog(true)}
-              >
-                <Ambulance className="w-4 h-4 mr-2" /> Request External Transfer
-              </Button>
+              {isDoctor && (
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start text-left text-danger hover:bg-danger-bg hover:text-danger border-danger/30"
+                  onClick={() => setTransferDialog(true)}
+                >
+                  <Ambulance className="w-4 h-4 mr-2" /> Request External Transfer
+                </Button>
+              )}
               <Button 
                 className="w-full bg-brand text-white hover:bg-brand-dark"
                 onClick={() => closeMutation.mutate(id)}
-                disabled={closeMutation.isPending}
+                disabled={closeMutation.isPending || (isNurse && (c.needs_doctor || c.lab_tests?.some(l => !l.results)))}
+                title={isNurse && (c.needs_doctor || c.lab_tests?.some(l => !l.results)) ? "Cannot close case with pending labs or doctor review" : ""}
               >
                 {closeMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 Close Case

@@ -42,7 +42,7 @@ export function LabDashboard() {
       return
     }
     updateMutation.mutate({
-      id: resultDialog.test.id,
+      id: resultDialog.test.test_id,
       status: 'completed',
       results: resultsText
     })
@@ -75,13 +75,13 @@ export function LabDashboard() {
               </thead>
               <tbody className="divide-y divide-border">
                 {pendingTests.map(test => (
-                  <tr key={test.id} className="hover:bg-[#F0F5F2] transition-colors">
+                  <tr key={test.test_id} className="hover:bg-[#F0F5F2] transition-colors">
                     <td className="px-4 py-3 font-medium text-text-primary">{test.test_name}</td>
                     <td className="px-4 py-3 text-text-muted">
                       Case #{test.case_id}
                       <Button variant="link" size="sm" className="ml-2 h-auto p-0" onClick={() => navigate(`/cases/${test.case_id}`)}>View Case</Button>
                     </td>
-                    <td className="px-4 py-3 text-text-muted">{formatRelative(test.created_at)}</td>
+                    <td className="px-4 py-3 text-text-muted">{formatRelative(test.requested_at)}</td>
                     <td className="px-4 py-3 text-right">
                       <Button 
                         size="sm" 
