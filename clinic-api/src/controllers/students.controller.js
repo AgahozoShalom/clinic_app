@@ -264,7 +264,7 @@ const uploadStudents = async (req, res, next) => {
         const result = await db.query(queryText, values);
         if (result.rowCount > 0) insertedCount++;
       } catch (err) {
-        errors.push(`Row ${i + 2}: ${err.message} - ${JSON.stringify(values)}`);
+        errors.push(`Row ${i + 2}: ${err.message} - ${JSON.stringify(row)}`);
       }
     }
 
