@@ -4,10 +4,11 @@ const { AppError } = require('../middlewares/errorHandler');
 const getCaseDetails = async (caseId) => {
   const caseResult = await db.query(`
     SELECT
-      c.id AS case_id, c.status, c.nurse_notes,
+      c.id AS case_id, c.status, c.nurse_notes, c.complaint, c.temperature, c.blood_pressure, c.heart_rate, c.respiratory_rate, c.severity, c.needs_doctor, c.created_at,
       s.id AS "student.id", s.admission_code AS "student.admission_code", s.first_name AS "student.first_name",
       s.last_name AS "student.last_name", s.grade AS "student.grade", s.class AS "student.class",
       s.mother_name AS "student.mother_name", s.mother_phone AS "student.mother_phone",
+      u_open.name AS opened_by,
       (SELECT COALESCE(JSON_AGG(f ORDER BY f.created_at DESC), '[]') FROM (
         SELECT cf.id, cf.added_by_role, cf.findings, u.name AS added_by_name, cf.created_at
         FROM case_findings cf
@@ -31,6 +32,7 @@ const getCaseDetails = async (caseId) => {
       ) tr) AS transfer
     FROM cases c
     JOIN students s ON s.id = c.student_id
+    JOIN users u_open ON u_open.id = c.created_by
     WHERE c.id = $1
   `, [caseId]);
 
@@ -44,6 +46,15 @@ const getCaseDetails = async (caseId) => {
     case_id: row.case_id,
     status: row.status,
     nurse_notes: row.nurse_notes,
+    complaint: row.complaint,
+    temperature: row.temperature,
+    blood_pressure: row.blood_pressure,
+    heart_rate: row.heart_rate,
+    respiratory_rate: row.respiratory_rate,
+    severity: row.severity,
+    needs_doctor: row.needs_doctor,
+    created_at: row.created_at,
+    opened_by: row.opened_by,
     student: {
       id: row['student.id'],
       admission_code: row['student.admission_code'],

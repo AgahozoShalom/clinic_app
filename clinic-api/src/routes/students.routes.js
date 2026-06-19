@@ -15,5 +15,7 @@ router.get('/:id', studentsController.getStudentById);
 router.post('/', authorize('admin'), validate(createStudentSchema), studentsController.createStudent);
 router.post('/upload', authorize('admin'), upload.single('file'), studentsController.uploadStudents);
 router.patch('/:id', authorize('admin'), validate(updateStudentSchema), studentsController.updateStudent);
+router.delete('/all', authorize('admin'), studentsController.deleteAllStudents);
+router.delete('/:id', authorize('admin'), studentsController.deleteStudent);
 
 module.exports = router;

@@ -18,10 +18,10 @@ import { useAuth } from '@/hooks'
 const caseSchema = z.object({
   student_id: z.string().min(1, 'Please select a student'),
   complaint: z.string().min(5, 'Complaint must be at least 5 characters'),
-  temperature: z.number().min(30).max(45).optional().or(z.literal('')),
+  temperature: z.string().refine(val => val === '' || (Number(val) >= 30 && Number(val) <= 45), { message: "Must be between 30 and 45" }).optional(),
   blood_pressure: z.string().optional(),
-  heart_rate: z.number().min(30).max(250).optional().or(z.literal('')),
-  respiratory_rate: z.number().min(10).max(60).optional().or(z.literal('')),
+  heart_rate: z.string().refine(val => val === '' || (Number(val) >= 30 && Number(val) <= 250), { message: "Must be between 30 and 250" }).optional(),
+  respiratory_rate: z.string().refine(val => val === '' || (Number(val) >= 10 && Number(val) <= 60), { message: "Must be between 10 and 60" }).optional(),
   severity: z.enum(['low', 'medium', 'high'])
 })
 
@@ -69,7 +69,8 @@ export function NewCasePage() {
       temperature: data.temperature === '' ? undefined : Number(data.temperature),
       heart_rate: data.heart_rate === '' ? undefined : Number(data.heart_rate),
       respiratory_rate: data.respiratory_rate === '' ? undefined : Number(data.respiratory_rate),
-      opened_by_id: user.id
+      opened_by_id: user.id,
+      student_id: Number(data.student_id)
     }
     createMutation.mutate(payload)
   }

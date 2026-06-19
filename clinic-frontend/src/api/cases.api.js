@@ -39,3 +39,8 @@ export const transferCase = async ({ id, ...data }) => {
   const response = await api.post(`/cases/${id}/transfer`, data)
   return response.data
 }
+
+export const escalateCase = async ({ id, ...data }) => {
+  const response = await api.post(`/cases/${id}/escalate`, data)
+  return response.data
+}

@@ -15,15 +15,9 @@ const getStudents = async (req, res, next) => {
     let paramIndex = 1;
 
     if (q) {
-      // Check if q looks like an admission code (alphanumeric without spaces)
-      if (/^[a-zA-Z0-9]+$/.test(q)) {
-        queryText += ` AND admission_code = $${paramIndex++}`;
-        params.push(q);
-      } else {
-        queryText += ` AND (first_name ILIKE $${paramIndex} OR last_name ILIKE $${paramIndex} OR family_name ILIKE $${paramIndex})`;
-        params.push(`%${q}%`);
-        paramIndex++;
-      }
+      queryText += ` AND (admission_code ILIKE $${paramIndex} OR first_name ILIKE $${paramIndex} OR last_name ILIKE $${paramIndex} OR family_name ILIKE $${paramIndex} OR CONCAT(first_name, ' ', last_name) ILIKE $${paramIndex} OR CONCAT(first_name, ' ', middle_name, ' ', last_name) ILIKE $${paramIndex})`;
+      params.push(`%${q}%`);
+      paramIndex++;
     }
 
     if (grade) {
@@ -232,6 +226,25 @@ const uploadStudents = async (req, res, next) => {
 
     for (let i = 0; i < data.length; i++) {
       const row = data[i];
+      // Convert Excel serial date to JS date only if it's a number (Excel format)
+      if (row.dob && typeof row.dob === "number") {
+        const excelEpoch = new Date(1899, 11, 30);
+        const date = new Date(excelEpoch.getTime() + row.dob * 86400000);
+        row.dob = date.toISOString().split("T")[0];
+      }
+
+      // Normalize gender enum
+      if (row.gender) {
+        const gender = String(row.gender).toLowerCase().trim();
+
+        if (gender === 'm' || gender === 'male') {
+          row.gender = 'male';
+        } else if (gender === 'f' || gender === 'female') {
+          row.gender = 'female';
+        } else {
+          throw new Error(`Invalid gender value: ${row.gender}`);
+        }
+      }
       try {
         const fields = ['admission_code', 'first_name', 'middle_name', 'last_name', 'family_name', 'dob', 'gender', 'nationality', 'grade', 'class', 'mother_name', 'mother_email', 'mother_phone'];
         const values = [];
@@ -248,11 +261,10 @@ const uploadStudents = async (req, res, next) => {
 
         const placeholders = values.map((_, idx) => `$${idx + 1}`).join(', ');
         const queryText = `INSERT INTO students (${cols.join(', ')}) VALUES (${placeholders})`;
-
         const result = await db.query(queryText, values);
         if (result.rowCount > 0) insertedCount++;
       } catch (err) {
-        errors.push(`Row ${i + 2}: ${err.message}`);
+        errors.push(`Row ${i + 2}: ${err.message} - ${JSON.stringify(values)}`);
       }
     }
 
@@ -272,10 +284,52 @@ const uploadStudents = async (req, res, next) => {
   }
 };
 
+/**
+ * Delete a student
+ */
+const deleteStudent = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await db.query('DELETE FROM students WHERE id = $1 RETURNING id', [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        status: 'error',
+        code: 404,
+        message: 'Student not found',
+      });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Student deleted successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Delete all students
+ */
+const deleteAllStudents = async (req, res, next) => {
+  try {
+    await db.query('TRUNCATE TABLE students CASCADE');
+    res.status(200).json({
+      status: 'success',
+      message: 'All students deleted successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getStudents,
   getStudentById,
   createStudent,
   updateStudent,
   uploadStudents,
+  deleteStudent,
+  deleteAllStudents,
 };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getCaseById, closeCase, addFindings, addLabTest, addMedication, transferCase } from '@/api/cases.api'
+import { getCaseById, closeCase, addFindings, addLabTest, addMedication, transferCase, escalateCase } from '@/api/cases.api'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { StatusPill } from '@/components/shared/StatusPill'
 import { Button } from '@/components/ui/button'
@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { useAuth, useRole } from '@/hooks'
 import { formatRelative } from '@/utils/formatDate'
-import { Activity, Beaker, FileText, Pill, ArrowLeft, Loader2, Ambulance } from 'lucide-react'
+import { Activity, Beaker, FileText, Pill, ArrowLeft, Loader2, Ambulance, UserPlus, Stethoscope } from 'lucide-react'
 import { toast } from 'sonner'
 
 export function CaseDetail() {
@@ -27,6 +27,17 @@ export function CaseDetail() {
   const [transferDialog, setTransferDialog] = useState(false)
   const [hospital, setHospital] = useState('')
   const [reason, setReason] = useState('')
+
+  const [medicationDialog, setMedicationDialog] = useState(false)
+  const [drugName, setDrugName] = useState('')
+  const [dosage, setDosage] = useState('')
+  const [instructions, setInstructions] = useState('')
+
+  const [labTestDialog, setLabTestDialog] = useState(false)
+  const [testName, setTestName] = useState('')
+
+  const [escalateDialog, setEscalateDialog] = useState(false)
+  const [escalateNotes, setEscalateNotes] = useState('')
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['case', id] })
 
@@ -58,6 +69,38 @@ export function CaseDetail() {
     }
   })
 
+  const medicationMutation = useMutation({
+    mutationFn: addMedication,
+    onSuccess: () => {
+      invalidate()
+      toast.success('Medication prescribed')
+      setMedicationDialog(false)
+      setDrugName('')
+      setDosage('')
+      setInstructions('')
+    }
+  })
+
+  const labTestMutation = useMutation({
+    mutationFn: addLabTest,
+    onSuccess: () => {
+      invalidate()
+      toast.success('Lab test requested')
+      setLabTestDialog(false)
+      setTestName('')
+    }
+  })
+
+  const escalateMutation = useMutation({
+    mutationFn: escalateCase,
+    onSuccess: () => {
+      invalidate()
+      toast.success('Case escalated to doctor')
+      setEscalateDialog(false)
+      setEscalateNotes('')
+    }
+  })
+
   if (isLoading) return <div className="p-8 text-center text-text-muted">Loading case details...</div>
   if (!c) return <div className="p-8 text-center text-danger">Case not found.</div>
 
@@ -68,7 +111,7 @@ export function CaseDetail() {
           <ArrowLeft className="w-5 h-5" />
         </button>
         <h1 className="text-2xl font-bold text-text-primary flex items-center gap-3">
-          Case #{c.id} 
+          Case #{c.case_id || id} 
           <StatusPill status={c.status} />
         </h1>
       </div>
@@ -81,18 +124,18 @@ export function CaseDetail() {
             <div className="space-y-3">
               <div>
                 <div className="text-xs text-text-muted uppercase tracking-wider">Name</div>
-                <div className="font-medium">{c.student_full_name}</div>
+                <div className="font-medium">{c.student.first_name} {c.student.last_name}</div>
               </div>
               <div>
                 <div className="text-xs text-text-muted uppercase tracking-wider">Grade/Class</div>
-                <div>{c.grade} {c.class}</div>
+                <div>{c.student.grade} {c.student.class}</div>
               </div>
               <div>
                 <div className="text-xs text-text-muted uppercase tracking-wider">Opened</div>
-                <div>{formatRelative(c.created_at)} by {c.opened_by}</div>
+                <div>{formatRelative(c.created_at)} by {c.opened_by || 'Nurse'}</div>
               </div>
             </div>
-            <Button variant="outline" className="w-full mt-4" onClick={() => navigate(`/students/${c.student_id}`)}>
+            <Button variant="outline" className="w-full mt-4" onClick={() => navigate(`/students/${c.student.id}`)}>
               View full profile
             </Button>
           </div>
@@ -132,6 +175,27 @@ export function CaseDetail() {
               </Button>
               <Button 
                 variant="outline" 
+                className="w-full justify-start text-left"
+                onClick={() => setMedicationDialog(true)}
+              >
+                <Pill className="w-4 h-4 mr-2" /> Prescribe Medication
+              </Button>
+              <Button 
+                variant="outline" 
+                className="w-full justify-start text-left"
+                onClick={() => setLabTestDialog(true)}
+              >
+                <Beaker className="w-4 h-4 mr-2" /> Request Lab Test
+              </Button>
+              <Button 
+                variant="outline" 
+                className="w-full justify-start text-left text-brand hover:bg-brand-light hover:text-brand-dark"
+                onClick={() => setEscalateDialog(true)}
+              >
+                <Stethoscope className="w-4 h-4 mr-2" /> Send to Doctor
+              </Button>
+              <Button 
+                variant="outline" 
                 className="w-full justify-start text-left text-danger hover:bg-danger-bg hover:text-danger border-danger/30"
                 onClick={() => setTransferDialog(true)}
               >
@@ -139,7 +203,7 @@ export function CaseDetail() {
               </Button>
               <Button 
                 className="w-full bg-brand text-white hover:bg-brand-dark"
-                onClick={() => closeMutation.mutate(c.id)}
+                onClick={() => closeMutation.mutate(id)}
                 disabled={closeMutation.isPending}
               >
                 {closeMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
@@ -189,7 +253,18 @@ export function CaseDetail() {
                       </div>
                     </div>
                   ))}
-                  {/* Medications mapped similarly... */}
+                  {c.medications?.map((m, i) => (
+                    <div key={`m-${i}`} className="p-4 flex gap-4">
+                      <div className="mt-1 bg-green-100 p-2 rounded-full h-8 w-8 flex items-center justify-center text-green-600">
+                        <Pill className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-text-primary text-sm mb-1">Medication: {m.drug_name} ({m.dosage}) <span className="text-text-muted font-normal">by {m.prescribed_by_role}</span></div>
+                        {m.instructions && <div className="text-sm text-text-primary mt-1">{m.instructions}</div>}
+                        <div className="text-xs text-text-muted mt-2">{formatRelative(m.prescribed_at)}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <div className="p-8 text-center text-text-muted">
@@ -214,7 +289,7 @@ export function CaseDetail() {
           />
           <div className="flex justify-end gap-3 mt-4">
             <Button variant="outline" onClick={() => setFindingsDialog(false)}>Cancel</Button>
-            <Button className="bg-brand text-white" onClick={() => findingsMutation.mutate({ id: c.id, notes: findingsText })}>Save Findings</Button>
+            <Button className="bg-brand text-white" onClick={() => findingsMutation.mutate({ id, notes: findingsText })}>Save Findings</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -239,8 +314,79 @@ export function CaseDetail() {
           </div>
           <div className="flex justify-end gap-3 mt-4">
             <Button variant="outline" onClick={() => setTransferDialog(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={() => transferMutation.mutate({ id: c.id, hospital, reason })} disabled={!hospital || !reason}>
+            <Button variant="destructive" onClick={() => transferMutation.mutate({ id, hospital, reason })} disabled={!hospital || !reason}>
               Request Transfer
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={medicationDialog} onOpenChange={setMedicationDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Prescribe Medication</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div>
+              <label className="text-sm font-medium mb-1 block">Drug Name</label>
+              <Input value={drugName} onChange={e => setDrugName(e.target.value)} placeholder="e.g. Paracetamol" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Dosage</label>
+              <Input value={dosage} onChange={e => setDosage(e.target.value)} placeholder="e.g. 500mg" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Instructions</label>
+              <Textarea value={instructions} onChange={e => setInstructions(e.target.value)} placeholder="e.g. Take twice daily after meals..." />
+            </div>
+          </div>
+          <div className="flex justify-end gap-3 mt-4">
+            <Button variant="outline" onClick={() => setMedicationDialog(false)}>Cancel</Button>
+            <Button className="bg-brand text-white" onClick={() => medicationMutation.mutate({ id, drug_name: drugName, dosage, instructions })} disabled={!drugName || !dosage}>
+              Prescribe
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={labTestDialog} onOpenChange={setLabTestDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Request Lab Test</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div>
+              <label className="text-sm font-medium mb-1 block">Test Name</label>
+              <Input value={testName} onChange={e => setTestName(e.target.value)} placeholder="e.g. Malaria Rapid Test" />
+            </div>
+          </div>
+          <div className="flex justify-end gap-3 mt-4">
+            <Button variant="outline" onClick={() => setLabTestDialog(false)}>Cancel</Button>
+            <Button className="bg-brand text-white" onClick={() => labTestMutation.mutate({ id, test_name: testName })} disabled={!testName}>
+              Request Test
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={escalateDialog} onOpenChange={setEscalateDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Send to Doctor</DialogTitle>
+            <DialogDescription>
+              Escalate this case to a doctor. This will flag it in the doctor's queue.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div>
+              <label className="text-sm font-medium mb-1 block">Reason for escalation (Optional)</label>
+              <Textarea value={escalateNotes} onChange={e => setEscalateNotes(e.target.value)} placeholder="Explain why the doctor needs to review this case..." className="min-h-[100px]" />
+            </div>
+          </div>
+          <div className="flex justify-end gap-3 mt-4">
+            <Button variant="outline" onClick={() => setEscalateDialog(false)}>Cancel</Button>
+            <Button className="bg-brand text-white" onClick={() => escalateMutation.mutate({ id, notes: escalateNotes })}>
+              Send to Doctor
             </Button>
           </div>
         </DialogContent>
