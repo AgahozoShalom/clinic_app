@@ -397,44 +397,62 @@ export function CaseDetail() {
 
       {/* MODALS */}
       <Dialog open={findingsDialog} onOpenChange={setFindingsDialog}>
-        <DialogContent className="font-sans">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-normal text-gray-800">Add Clinical Findings</DialogTitle>
-          </DialogHeader>
-          <Textarea 
-            value={findingsText} 
-            onChange={e => setFindingsText(e.target.value)} 
-            placeholder="Enter clinical observations..."
-            className="min-h-[120px] mt-2 text-[14px] resize-none"
-          />
-          <div className="flex justify-end gap-3 mt-6">
-            <button className="px-4 py-2 text-[13px] font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setFindingsDialog(false)}>Cancel</button>
-            <button className="px-5 py-2 text-[13px] font-medium text-white bg-[#0052CC] hover:bg-[#0047B3] rounded-lg transition-colors shadow-sm" onClick={() => findingsMutation.mutate({ id, notes: findingsText })}>Save Findings</button>
+        <DialogContent className="p-0 border-0 shadow-2xl rounded-2xl font-sans overflow-hidden max-w-lg">
+          <div className="px-6 py-5 border-b border-gray-100/80">
+            <DialogTitle className="text-[17px] font-semibold text-gray-900">Add Clinical Findings</DialogTitle>
+            <DialogDescription className="text-[13px] text-gray-500 mt-1">Record new clinical observations for this case.</DialogDescription>
+          </div>
+          <div className="px-6 py-6">
+            <div>
+              <label className="text-[13px] font-medium text-gray-700 mb-2 block">Clinical Notes <span className="text-red-500">*</span></label>
+              <Textarea 
+                value={findingsText} 
+                onChange={e => setFindingsText(e.target.value)} 
+                placeholder="What are your clinical findings?"
+                className="min-h-[120px] text-[14px] resize-none border-gray-200 focus:border-[#7198F5] focus:ring-1 focus:ring-[#7198F5] rounded-lg"
+              />
+            </div>
+          </div>
+          <div className="px-6 py-4 border-t border-gray-100/80 bg-white flex justify-end gap-3">
+            <button className="px-5 py-2 text-[13px] font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" onClick={() => setFindingsDialog(false)}>Cancel</button>
+            <button className="px-5 py-2 text-[13px] font-medium text-white bg-[#7198F5] hover:bg-[#5E8BF2] rounded-lg transition-colors shadow-sm disabled:opacity-50" onClick={() => findingsMutation.mutate({ id, notes: findingsText })} disabled={!findingsText}>
+              Save Findings
+            </button>
           </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={transferDialog} onOpenChange={setTransferDialog}>
-        <DialogContent className="font-sans">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-normal text-gray-800">Request External Transfer</DialogTitle>
-            <DialogDescription className="text-[13px]">
+        <DialogContent className="p-0 border-0 shadow-2xl rounded-2xl font-sans overflow-hidden max-w-lg">
+          <div className="px-6 py-5 border-b border-gray-100/80">
+            <DialogTitle className="text-[17px] font-semibold text-gray-900">Request External Transfer</DialogTitle>
+            <DialogDescription className="text-[13px] text-gray-500 mt-1">
               Record the hospital destination and reason for transferring this student.
             </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 mt-2">
+          </div>
+          <div className="px-6 py-6 space-y-5">
             <div>
-              <label className="text-[13px] font-medium mb-1.5 block text-gray-700">Hospital Name</label>
-              <Input value={hospital} onChange={e => setHospital(e.target.value)} placeholder="e.g. District Hospital" className="text-[14px]" />
+              <label className="text-[13px] font-medium text-gray-700 mb-2 block">Hospital Name <span className="text-red-500">*</span></label>
+              <Input 
+                value={hospital} 
+                onChange={e => setHospital(e.target.value)} 
+                placeholder="e.g. District Hospital" 
+                className="text-[14px] border-gray-200 focus:border-[#7198F5] focus:ring-1 focus:ring-[#7198F5] rounded-lg h-11" 
+              />
             </div>
             <div>
-              <label className="text-[13px] font-medium mb-1.5 block text-gray-700">Reason for transfer</label>
-              <Textarea value={reason} onChange={e => setReason(e.target.value)} placeholder="Required care exceeds clinic capabilities..." className="text-[14px] resize-none" />
+              <label className="text-[13px] font-medium text-gray-700 mb-2 block">Reason for transfer <span className="text-red-500">*</span></label>
+              <Textarea 
+                value={reason} 
+                onChange={e => setReason(e.target.value)} 
+                placeholder="Required care exceeds clinic capabilities..." 
+                className="text-[14px] resize-none border-gray-200 focus:border-[#7198F5] focus:ring-1 focus:ring-[#7198F5] rounded-lg min-h-[90px]" 
+              />
             </div>
           </div>
-          <div className="flex justify-end gap-3 mt-6">
-            <button className="px-4 py-2 text-[13px] font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setTransferDialog(false)}>Cancel</button>
-            <button className="px-5 py-2 text-[13px] font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-sm disabled:opacity-50" onClick={() => transferMutation.mutate({ id, hospital_name: hospital, reason })} disabled={!hospital || !reason}>
+          <div className="px-6 py-4 border-t border-gray-100/80 bg-white flex justify-end gap-3">
+            <button className="px-5 py-2 text-[13px] font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" onClick={() => setTransferDialog(false)}>Cancel</button>
+            <button className="px-5 py-2 text-[13px] font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors shadow-sm disabled:opacity-50" onClick={() => transferMutation.mutate({ id, hospital_name: hospital, reason })} disabled={!hospital || !reason}>
               Request Transfer
             </button>
           </div>
@@ -442,27 +460,43 @@ export function CaseDetail() {
       </Dialog>
 
       <Dialog open={medicationDialog} onOpenChange={setMedicationDialog}>
-        <DialogContent className="font-sans">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-normal text-gray-800">Prescribe Medication</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 mt-2">
+        <DialogContent className="p-0 border-0 shadow-2xl rounded-2xl font-sans overflow-hidden max-w-lg">
+          <div className="px-6 py-5 border-b border-gray-100/80">
+            <DialogTitle className="text-[17px] font-semibold text-gray-900">Prescribe Medication</DialogTitle>
+            <DialogDescription className="text-[13px] text-gray-500 mt-1">Add a new medication prescription for this student.</DialogDescription>
+          </div>
+          <div className="px-6 py-6 space-y-5">
             <div>
-              <label className="text-[13px] font-medium mb-1.5 block text-gray-700">Drug Name</label>
-              <Input value={drugName} onChange={e => setDrugName(e.target.value)} placeholder="e.g. Paracetamol" className="text-[14px]" />
+              <label className="text-[13px] font-medium text-gray-700 mb-2 block">Drug Name <span className="text-red-500">*</span></label>
+              <Input 
+                value={drugName} 
+                onChange={e => setDrugName(e.target.value)} 
+                placeholder="e.g. Paracetamol" 
+                className="text-[14px] border-gray-200 focus:border-[#7198F5] focus:ring-1 focus:ring-[#7198F5] rounded-lg h-11" 
+              />
             </div>
             <div>
-              <label className="text-[13px] font-medium mb-1.5 block text-gray-700">Dosage</label>
-              <Input value={dosage} onChange={e => setDosage(e.target.value)} placeholder="e.g. 500mg" className="text-[14px]" />
+              <label className="text-[13px] font-medium text-gray-700 mb-2 block">Dosage <span className="text-red-500">*</span></label>
+              <Input 
+                value={dosage} 
+                onChange={e => setDosage(e.target.value)} 
+                placeholder="e.g. 500mg" 
+                className="text-[14px] border-gray-200 focus:border-[#7198F5] focus:ring-1 focus:ring-[#7198F5] rounded-lg h-11" 
+              />
             </div>
             <div>
-              <label className="text-[13px] font-medium mb-1.5 block text-gray-700">Instructions</label>
-              <Textarea value={instructions} onChange={e => setInstructions(e.target.value)} placeholder="e.g. Take twice daily after meals..." className="text-[14px] resize-none" />
+              <label className="text-[13px] font-medium text-gray-700 mb-2 block">Instructions</label>
+              <Textarea 
+                value={instructions} 
+                onChange={e => setInstructions(e.target.value)} 
+                placeholder="e.g. Take twice daily after meals..." 
+                className="text-[14px] resize-none border-gray-200 focus:border-[#7198F5] focus:ring-1 focus:ring-[#7198F5] rounded-lg min-h-[90px]" 
+              />
             </div>
           </div>
-          <div className="flex justify-end gap-3 mt-6">
-            <button className="px-4 py-2 text-[13px] font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setMedicationDialog(false)}>Cancel</button>
-            <button className="px-5 py-2 text-[13px] font-medium text-white bg-[#0052CC] hover:bg-[#0047B3] rounded-lg transition-colors shadow-sm disabled:opacity-50" onClick={() => medicationMutation.mutate({ id, drug_name: drugName, dosage, instructions })} disabled={!drugName || !dosage}>
+          <div className="px-6 py-4 border-t border-gray-100/80 bg-white flex justify-end gap-3">
+            <button className="px-5 py-2 text-[13px] font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" onClick={() => setMedicationDialog(false)}>Cancel</button>
+            <button className="px-5 py-2 text-[13px] font-medium text-white bg-[#7198F5] hover:bg-[#5E8BF2] rounded-lg transition-colors shadow-sm disabled:opacity-50" onClick={() => medicationMutation.mutate({ id, drug_name: drugName, dosage, instructions })} disabled={!drugName || !dosage}>
               Prescribe
             </button>
           </div>
@@ -470,19 +504,25 @@ export function CaseDetail() {
       </Dialog>
 
       <Dialog open={labTestDialog} onOpenChange={setLabTestDialog}>
-        <DialogContent className="font-sans">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-normal text-gray-800">Request Lab Test</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 mt-2">
+        <DialogContent className="p-0 border-0 shadow-2xl rounded-2xl font-sans overflow-hidden max-w-sm">
+          <div className="px-6 py-5 border-b border-gray-100/80">
+            <DialogTitle className="text-[17px] font-semibold text-gray-900">Request Lab Test</DialogTitle>
+            <DialogDescription className="text-[13px] text-gray-500 mt-1">Submit a new laboratory test request.</DialogDescription>
+          </div>
+          <div className="px-6 py-6">
             <div>
-              <label className="text-[13px] font-medium mb-1.5 block text-gray-700">Test Name</label>
-              <Input value={testName} onChange={e => setTestName(e.target.value)} placeholder="e.g. Malaria Rapid Test" className="text-[14px]" />
+              <label className="text-[13px] font-medium text-gray-700 mb-2 block">Test Name <span className="text-red-500">*</span></label>
+              <Input 
+                value={testName} 
+                onChange={e => setTestName(e.target.value)} 
+                placeholder="e.g. Malaria Rapid Test" 
+                className="text-[14px] border-gray-200 focus:border-[#7198F5] focus:ring-1 focus:ring-[#7198F5] rounded-lg h-11" 
+              />
             </div>
           </div>
-          <div className="flex justify-end gap-3 mt-6">
-            <button className="px-4 py-2 text-[13px] font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setLabTestDialog(false)}>Cancel</button>
-            <button className="px-5 py-2 text-[13px] font-medium text-white bg-[#0052CC] hover:bg-[#0047B3] rounded-lg transition-colors shadow-sm disabled:opacity-50" onClick={() => labTestMutation.mutate({ id, test_name: testName })} disabled={!testName}>
+          <div className="px-6 py-4 border-t border-gray-100/80 bg-white flex justify-end gap-3">
+            <button className="px-5 py-2 text-[13px] font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" onClick={() => setLabTestDialog(false)}>Cancel</button>
+            <button className="px-5 py-2 text-[13px] font-medium text-white bg-[#7198F5] hover:bg-[#5E8BF2] rounded-lg transition-colors shadow-sm disabled:opacity-50" onClick={() => labTestMutation.mutate({ id, test_name: testName })} disabled={!testName}>
               Request Test
             </button>
           </div>
@@ -490,22 +530,27 @@ export function CaseDetail() {
       </Dialog>
 
       <Dialog open={escalateDialog} onOpenChange={setEscalateDialog}>
-        <DialogContent className="font-sans">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-normal text-gray-800">Send to Doctor</DialogTitle>
-            <DialogDescription className="text-[13px]">
+        <DialogContent className="p-0 border-0 shadow-2xl rounded-2xl font-sans overflow-hidden max-w-lg">
+          <div className="px-6 py-5 border-b border-gray-100/80">
+            <DialogTitle className="text-[17px] font-semibold text-gray-900">Send to Doctor</DialogTitle>
+            <DialogDescription className="text-[13px] text-gray-500 mt-1">
               Escalate this case to a doctor. This will flag it in the doctor's queue.
             </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 mt-2">
+          </div>
+          <div className="px-6 py-6">
             <div>
-              <label className="text-[13px] font-medium mb-1.5 block text-gray-700">Reason for escalation (Optional)</label>
-              <Textarea value={escalateNotes} onChange={e => setEscalateNotes(e.target.value)} placeholder="Explain why the doctor needs to review this case..." className="min-h-[100px] text-[14px] resize-none" />
+              <label className="text-[13px] font-medium text-gray-700 mb-2 block">Reason for escalation</label>
+              <Textarea 
+                value={escalateNotes} 
+                onChange={e => setEscalateNotes(e.target.value)} 
+                placeholder="Explain why the doctor needs to review this case..." 
+                className="min-h-[120px] text-[14px] resize-none border-gray-200 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 rounded-lg" 
+              />
             </div>
           </div>
-          <div className="flex justify-end gap-3 mt-6">
-            <button className="px-4 py-2 text-[13px] font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setEscalateDialog(false)}>Cancel</button>
-            <button className="px-5 py-2 text-[13px] font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-lg transition-colors shadow-sm" onClick={() => escalateMutation.mutate({ id, notes: escalateNotes })}>
+          <div className="px-6 py-4 border-t border-gray-100/80 bg-white flex justify-end gap-3">
+            <button className="px-5 py-2 text-[13px] font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" onClick={() => setEscalateDialog(false)}>Cancel</button>
+            <button className="px-5 py-2 text-[13px] font-medium text-white bg-orange-500 hover:bg-orange-600 rounded-lg transition-colors shadow-sm" onClick={() => escalateMutation.mutate({ id, notes: escalateNotes })}>
               Send to Doctor
             </button>
           </div>
