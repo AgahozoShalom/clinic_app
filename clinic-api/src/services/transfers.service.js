@@ -17,7 +17,7 @@ const createTransfer = async (caseId, userId, data) => {
     const { hospital_name, reason } = data;
 
     const transferResult = await client.query(
-      'INSERT INTO transfers (case_id, initiated_by, hospital_name, reason) VALUES ($1, $2, $3, $4) RETURNING id, case_id, hospital_name, reason, status, initiated_by, created_at',
+      "INSERT INTO transfers (case_id, initiated_by, hospital_name, reason, status) VALUES ($1, $2, $3, $4, 'confirmed') RETURNING id, case_id, hospital_name, reason, status, initiated_by, created_at",
       [caseId, userId, hospital_name, reason]
     );
 
