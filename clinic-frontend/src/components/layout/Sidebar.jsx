@@ -1,5 +1,6 @@
 import React from 'react'
-import { Settings, ChevronDown, ChevronLeft, ChevronRight, Trees } from 'lucide-react'
+import { Settings, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
+import Logo from '@/assets/Logo.svg'
 
 // Helper to generate calendar days for the current month
 function getCalendarDays() {
@@ -49,9 +50,7 @@ export function Sidebar({ mobile, onClose }) {
       {/* Brand Logo Box */}
       <div className="p-4">
         <div className="bg-[#F8F9FA] rounded-xl p-4 flex items-center gap-3 border border-gray-100/50">
-          <div className="w-10 h-10 rounded bg-[#E8F0EA] flex items-center justify-center text-[#4A8060] shrink-0 shadow-sm">
-            <Trees className="w-6 h-6" />
-          </div>
+          <img src={Logo} alt="Clinic Logo" className="w-10 h-10 shrink-0 object-contain" />
           <div className="flex flex-col">
             <span className="text-[11px] font-bold tracking-widest text-gray-800 leading-tight">
               AGAHOZO<br/>SHALOM<br/>YOUTH VILLAGE

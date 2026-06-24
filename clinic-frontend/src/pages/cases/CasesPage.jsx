@@ -125,7 +125,10 @@ export function CasesPage() {
                     <tr>
                       <th className="px-6 py-4 font-normal">Case ID</th>
                       <th className="px-6 py-4 font-normal">Student</th>
+                      <th className="px-6 py-4 font-normal">Family</th>
                       <th className="px-6 py-4 font-normal">Status</th>
+                      <th className="px-6 py-4 font-normal">Lab Status</th>
+                      <th className="px-6 py-4 font-normal">Doctor Status</th>
                       <th className="px-6 py-4 font-normal">Date Opened</th>
                       <th className="px-6 py-4 font-normal">Opened By</th>
                       <th className="px-6 py-4 font-normal text-right">Actions</th>
@@ -138,12 +141,32 @@ export function CasesPage() {
                         <td className="px-6 py-4 text-gray-700 text-[13px] font-medium flex items-center gap-2">
                           {c.student_full_name}
                           {c.needs_doctor && (
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-50 text-red-600 border border-red-100 uppercase tracking-wide">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-50 text-red-600 border border-red-100 uppercase tracking-wide">
                               Escalated
                             </span>
                           )}
                         </td>
+                        <td className="px-6 py-4 text-gray-700 text-[13px]">{c.family_name}</td>
                         <td className="px-6 py-4 text-[13px]"><StatusPill status={c.status} /></td>
+                        <td className="px-6 py-4 text-[13px]">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+                            c.lab_status === 'Ready' ? 'bg-green-50 text-green-700 border-green-200' :
+                            c.lab_status === 'Pending' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                            'bg-gray-50 text-gray-600 border-gray-200'
+                          }`}>
+                            {c.lab_status || 'N/A'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-[13px]">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+                            c.doctor_status === 'Reviewed' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                            c.doctor_status === 'Not Reviewed' ? 'bg-red-50 text-red-700 border-red-200' :
+                            c.doctor_status === 'Transferred' ? 'bg-purple-50 text-purple-700 border-purple-200' :
+                            'bg-gray-50 text-gray-600 border-gray-200'
+                          }`}>
+                            {c.doctor_status || 'N/A'}
+                          </span>
+                        </td>
                         <td className="px-6 py-4 text-gray-500 text-[13px]">{formatRelative(c.created_at)}</td>
                         <td className="px-6 py-4 text-gray-500 text-[13px]">{c.opened_by}</td>
                         <td className="px-6 py-4 text-right">

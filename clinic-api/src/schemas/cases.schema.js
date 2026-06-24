@@ -22,7 +22,8 @@ const createMedicationSchema = z.object({
 });
 
 const createLabTestSchema = z.object({
-  test_name: z.string().min(3),
+  test_names: z.array(z.string().min(1)).min(1),
+  notes: z.string().optional().nullable(),
 });
 
 const escalateCaseSchema = z.object({

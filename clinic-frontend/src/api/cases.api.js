@@ -44,3 +44,8 @@ export const escalateCase = async ({ id, ...data }) => {
   const response = await api.post(`/cases/${id}/escalate`, data)
   return response.data
 }
+
+export const toggleFollowUp = async (id) => {
+  const response = await api.patch(`/cases/${id}/follow-up`)
+  return response.data
+}

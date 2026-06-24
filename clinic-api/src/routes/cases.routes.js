@@ -15,5 +15,6 @@ router.post('/:id/findings', authorize('nurse', 'doctor', 'lab_technician'), val
 router.post('/:id/medications', authorize('nurse', 'doctor'), validate(createMedicationSchema), casesController.addMedication);
 router.post('/:id/lab-tests', authorize('nurse', 'doctor'), validate(createLabTestSchema), casesController.addLabTest);
 router.post('/:id/escalate', authorize('nurse'), validate(escalateCaseSchema), casesController.escalateCase);
+router.patch('/:id/follow-up', authorize('nurse', 'doctor'), casesController.toggleFollowUp);
 
 module.exports = router;

@@ -3,6 +3,8 @@ import { NavLink } from 'react-router-dom'
 import { useAuth, useRole } from '@/hooks'
 import { Menu, Search, Bell, MessageSquare, LogOut, Home, Users, FolderOpen, Beaker } from 'lucide-react'
 import { cn } from '@/utils'
+import { useQuery } from '@tanstack/react-query'
+import { getCases } from '@/api/cases.api'
 
 export function Topbar({ onMenuClick }) {
   const { user, logout } = useAuth()
@@ -22,21 +24,29 @@ export function Topbar({ onMenuClick }) {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
+  const { data: openCases } = useQuery({
+    queryKey: ['cases', { status: 'open' }],
+    queryFn: () => getCases({ status: 'open' }),
+    enabled: isAdmin || isNurse || isDoctor
+  })
+  
+  const openCasesCount = openCases?.length || 0
+
   const links = []
 
   if (isAdmin) {
     links.push({ to: '/admin/dashboard', icon: Home, label: 'Home', color: 'text-purple-500' })
     links.push({ to: '/students', icon: Users, label: 'Students', color: 'text-blue-500' })
-    links.push({ to: '/cases', icon: FolderOpen, label: 'Cases', badge: 21, color: 'text-red-500' })
+    links.push({ to: '/cases', icon: FolderOpen, label: 'Cases', badge: openCasesCount, color: 'text-red-500' })
     links.push({ to: '/admin/staff', icon: Users, label: 'Staff', color: 'text-gray-500' })
   } else if (isNurse) {
     links.push({ to: '/nurse/dashboard', icon: Home, label: 'Home', color: 'text-purple-500' })
     links.push({ to: '/students', icon: Users, label: 'Students', color: 'text-blue-500' })
-    links.push({ to: '/cases', icon: FolderOpen, label: 'Cases', badge: 21, color: 'text-red-500' })
+    links.push({ to: '/cases', icon: FolderOpen, label: 'Cases', badge: openCasesCount, color: 'text-red-500' })
   } else if (isDoctor) {
     links.push({ to: '/doctor/dashboard', icon: Home, label: 'Home', color: 'text-purple-500' })
     links.push({ to: '/students', icon: Users, label: 'Students', color: 'text-blue-500' })
-    links.push({ to: '/cases', icon: FolderOpen, label: 'Cases', badge: 21, color: 'text-red-500' })
+    links.push({ to: '/cases', icon: FolderOpen, label: 'Cases', badge: openCasesCount, color: 'text-red-500' })
   } else if (isLab) {
     links.push({ to: '/lab/dashboard', icon: Beaker, label: 'Lab Queue', color: 'text-blue-500' })
   } else {
@@ -77,7 +87,7 @@ export function Topbar({ onMenuClick }) {
                     </span>
                     
                     {/* Badge */}
-                    {link.badge && (
+                    {link.badge > 0 && (
                       <span className="absolute -top-1.5 -right-3 bg-[#FF4747] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white shadow-sm leading-none">
                         {link.badge}
                       </span>

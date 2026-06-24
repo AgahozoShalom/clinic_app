@@ -1,0 +1,1 @@
+const db = require('./src/config/db'); db.query('INSERT INTO lab_tests (case_id, requested_by, test_name, status, notes) VALUES (\, \, \, \, \) RETURNING *', [8, 1, 'Malaria Test', 'requested', '']).then(res => { console.log('SUCCESS:', res.rows); process.exit(0); }).catch(err => { console.error('DB ERROR:', err); process.exit(1); })

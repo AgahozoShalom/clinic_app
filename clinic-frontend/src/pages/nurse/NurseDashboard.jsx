@@ -25,21 +25,21 @@ export function NurseDashboard() {
     queryFn: () => getCases({ status: 'open', opened_by_id: user?.id })
   })
 
-  const { data: myCasesToday } = useQuery({ 
-    queryKey: ['cases', 'my', 'today'], 
-    queryFn: () => getCases({ opened_by_id: user?.id, time: 'today' }) 
+  const { data: myCasesToday } = useQuery({
+    queryKey: ['cases', 'my', 'today'],
+    queryFn: () => getCases({ opened_by_id: user?.id, time: 'today' })
   })
-  
-  const { data: myClosedToday } = useQuery({ 
-    queryKey: ['cases', 'closed', 'my', 'today'], 
-    queryFn: () => getCases({ status: 'closed', opened_by_id: user?.id, time: 'today' }) 
+
+  const { data: myClosedToday } = useQuery({
+    queryKey: ['cases', 'closed', 'my', 'today'],
+    queryFn: () => getCases({ status: 'closed', opened_by_id: user?.id, time: 'today' })
   })
-  
+
   // Calculate Stats
   const maleCount = students?.filter(s => s.gender?.toLowerCase() === 'male').length || 0;
   const femaleCount = students?.filter(s => s.gender?.toLowerCase() === 'female').length || 0;
   const totalStudents = students?.length || 0;
-  
+
   // By default all students are boarding in this system as day count is 0 based on schema
   const boardingCount = totalStudents;
   const dayCount = 0;
@@ -57,7 +57,7 @@ export function NurseDashboard() {
 
   return (
     <div className="space-y-8 max-w-[1400px] w-full p-4 sm:p-6 lg:p-8 font-sans">
-      
+
       <div>
         <h1 className="text-3xl font-normal text-gray-800 tracking-tight">Nurse Dashboard</h1>
         <p className="text-gray-500 mt-2">Manage your open cases and view student demographics.</p>
@@ -65,14 +65,14 @@ export function NurseDashboard() {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
+
         {/* Gender Chart Card */}
         <div className="bg-white rounded-xl p-6 shadow-[0_2px_10px_rgb(0,0,0,0.04)] border border-gray-100/50">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-[15px] font-medium text-gray-700">Gender</h3>
             <TrendingUp className="w-4 h-4 text-[#22C55E]" />
           </div>
-          
+
           <div className="flex items-center h-[160px]">
             <div className="w-1/2 h-full relative">
               <ResponsiveContainer width="100%" height="100%">
@@ -94,7 +94,7 @@ export function NurseDashboard() {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            
+
             <div className="w-1/2 flex flex-col justify-center gap-4 pl-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -120,7 +120,7 @@ export function NurseDashboard() {
             <h3 className="text-[15px] font-medium text-gray-700">Boarding</h3>
             <TrendingUp className="w-4 h-4 text-[#22C55E]" />
           </div>
-          
+
           <div className="flex items-center h-[160px]">
             <div className="w-1/2 h-full relative flex items-end pb-4">
               <ResponsiveContainer width="100%" height="200%">
@@ -147,7 +147,7 @@ export function NurseDashboard() {
                 <span className="text-sm font-medium text-gray-400">100 %</span>
               </div>
             </div>
-            
+
             <div className="w-1/2 flex flex-col justify-center gap-4 pl-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -172,15 +172,15 @@ export function NurseDashboard() {
       {/* Case Stats text boxes from previous design */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-xl p-5 shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-gray-100/50">
-          <p className="text-[13px] text-gray-400 font-medium tracking-wide mb-1">My open cases</p>
+          <p className="text-[13px] text-gray-400 font-medium tracking-wide mb-1">All open cases</p>
           <p className="text-2xl font-normal text-gray-800">{openCases?.length || 0}</p>
         </div>
         <div className="bg-white rounded-xl p-5 shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-gray-100/50">
-          <p className="text-[13px] text-gray-400 font-medium tracking-wide mb-1">Cases I closed today</p>
+          <p className="text-[13px] text-gray-400 font-medium tracking-wide mb-1">Cases I closed</p>
           <p className="text-2xl font-normal text-gray-800">{myClosedToday?.length || 0}</p>
         </div>
         <div className="bg-white rounded-xl p-5 shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-gray-100/50">
-          <p className="text-[13px] text-gray-400 font-medium tracking-wide mb-1">Students seen today</p>
+          <p className="text-[13px] text-gray-400 font-medium tracking-wide mb-1">Students seen</p>
           <p className="text-2xl font-normal text-gray-800">{myCasesToday?.length || 0}</p>
         </div>
       </div>
@@ -193,7 +193,7 @@ export function NurseDashboard() {
             {openCases?.length || 0}
           </span>
         </div>
-        
+
         <div className="overflow-x-auto">
           {loadingCases ? (
             <div className="p-4"><LoadingRows rows={3} cols={4} /></div>
@@ -226,7 +226,7 @@ export function NurseDashboard() {
                     <td className="px-6 py-4 text-gray-500 text-[13px]">{formatRelative(c.created_at)}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end opacity-70 group-hover:opacity-100 transition-opacity">
-                        <button 
+                        <button
                           onClick={() => navigate(`/cases/${c.case_id || c.id}`)}
                           className="text-gray-700 hover:text-black transition-colors"
                           title="View Case"
