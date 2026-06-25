@@ -129,16 +129,35 @@ const addFindings = async (req, res, next) => {
 };
 
 const addLabTest = async (req, res, next) => {
+  const client = await db.pool.connect();
   try {
     const { id } = req.params;
-    const { test_name } = req.body;
-    const result = await db.query(
-      'INSERT INTO lab_tests (case_id, requested_by, test_name, status) VALUES ($1, $2, $3, $4) RETURNING *',
-      [id, req.user.id, test_name, 'requested']
-    );
-    res.status(201).json(result.rows[0]);
+    const { test_name, test_names, notes } = req.body;
+    
+    const testsToRequest = test_names || (test_name ? [test_name] : []);
+    
+    if (testsToRequest.length === 0) {
+      throw new AppError('No test names provided', 400);
+    }
+
+    await client.query('BEGIN');
+
+    const createdRecords = [];
+    for (const test of testsToRequest) {
+      const result = await client.query(
+        'INSERT INTO lab_tests (case_id, requested_by, test_name, status, notes) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+        [id, req.user.id, test, 'requested', notes || null]
+      );
+      createdRecords.push(result.rows[0]);
+    }
+
+    await client.query('COMMIT');
+    res.status(201).json(createdRecords);
   } catch (err) {
+    await client.query('ROLLBACK');
     next(err);
+  } finally {
+    client.release();
   }
 };
 
@@ -182,6 +201,33 @@ const escalateCase = async (req, res, next) => {
   }
 };
 
+const toggleFollowUp = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    const caseCheck = await db.query('SELECT status, needs_follow_up FROM cases WHERE id = $1', [id]);
+    if (caseCheck.rows.length === 0) {
+      throw new AppError('Case not found', 404);
+    }
+
+    if (caseCheck.rows[0].status !== 'closed') {
+      throw new AppError('Conflict: Follow up can only be set on closed cases', 409);
+    }
+
+    const currentStatus = caseCheck.rows[0].needs_follow_up;
+    const newStatus = !currentStatus;
+
+    const result = await db.query(
+      'UPDATE cases SET needs_follow_up = $1, updated_at = NOW() WHERE id = $2 RETURNING id, needs_follow_up',
+      [newStatus, id]
+    );
+
+    res.status(200).json({ status: 'success', data: result.rows[0] });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   createCase,
   getCases,
@@ -192,4 +238,5 @@ module.exports = {
   addLabTest,
   addMedication,
   escalateCase,
+  toggleFollowUp,
 };

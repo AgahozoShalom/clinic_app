@@ -142,11 +142,22 @@ CREATE TRIGGER trg_transfers_updated_at BEFORE UPDATE ON transfers FOR EACH ROW 
 -- Views
 CREATE OR REPLACE VIEW v_case_summary AS
 SELECT
-    c.id AS case_id, c.status, c.nurse_notes, c.created_at, c.closed_at,
-    s.id AS student_id, s.admission_code,
-    s.first_name || ' ' || COALESCE(s.middle_name || ' ', '') || s.last_name || ' (' || s.family_name || ')' AS student_full_name,
+    c.id AS case_id, c.status, c.nurse_notes, c.created_at, c.closed_at, c.needs_doctor,
+    s.id AS student_id, s.admission_code, s.family_name,
+    s.first_name || ' ' || COALESCE(s.middle_name || ' ', '') || s.last_name AS student_full_name,
     s.grade, s.class, s.mother_name, s.mother_phone,
-    u_open.name AS opened_by, u_close.name AS closed_by
+    u_open.name AS opened_by, u_close.name AS closed_by,
+    CASE 
+      WHEN EXISTS (SELECT 1 FROM transfers t WHERE t.case_id = c.id AND t.status IN ('initiated', 'confirmed')) THEN 'Transferred'
+      WHEN EXISTS (SELECT 1 FROM case_findings cf WHERE cf.case_id = c.id AND cf.added_by_role = 'doctor') THEN 'Reviewed'
+      WHEN c.needs_doctor = TRUE THEN 'Not Reviewed'
+      ELSE 'N/A'
+    END AS doctor_status,
+    CASE
+      WHEN NOT EXISTS (SELECT 1 FROM lab_tests lt WHERE lt.case_id = c.id) THEN 'N/A'
+      WHEN EXISTS (SELECT 1 FROM lab_tests lt WHERE lt.case_id = c.id AND lt.status <> 'completed') THEN 'Pending'
+      ELSE 'Ready'
+    END AS lab_status
 FROM cases c
 JOIN students s      ON s.id = c.student_id
 JOIN users    u_open ON u_open.id = c.created_by
@@ -169,7 +180,7 @@ WHERE lt.status <> 'completed' ORDER BY lt.requested_at;
 CREATE OR REPLACE VIEW v_pending_transfers AS
 SELECT t.id AS transfer_id, t.hospital_name, t.reason, t.status AS transfer_status,
        t.created_at AS transfer_initiated_at,
-       cs.case_id, cs.student_full_name, cs.admission_code, cs.grade, cs.class,
+       cs.case_id, cs.student_full_name, cs.family_name, cs.admission_code, cs.grade, cs.class,
        cs.mother_name, cs.mother_phone
 FROM transfers t
 JOIN v_case_summary cs ON cs.case_id = t.case_id

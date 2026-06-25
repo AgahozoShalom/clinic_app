@@ -1,7 +1,8 @@
 const { z } = require('zod');
 
 const createLabTestSchema = z.object({
-  test_name: z.string().min(1),
+  test_names: z.array(z.string().min(1)).min(1),
+  notes: z.string().optional().nullable(),
 });
 
 const updateLabTestResultsSchema = z.object({

@@ -105,7 +105,7 @@ export function NewCasePage() {
 
         {/* Body */}
         <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
-          <form id="new-case-form" onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+          <form id="new-case-form" onSubmit={handleSubmit(onSubmit)} className="space-y-8 pb-32">
             
             {/* Section 1: Student Selection */}
             <div className="space-y-4">
@@ -234,7 +234,7 @@ export function NewCasePage() {
                         <SelectTrigger className="h-10 text-[14px]">
                           <SelectValue placeholder="Select severity" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="z-[110]">
                           <SelectItem value="low">
                             <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-500"></div>Low (Routine)</div>
                           </SelectItem>
