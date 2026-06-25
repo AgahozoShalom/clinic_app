@@ -123,9 +123,33 @@ const deactivateUser = async (req, res, next) => {
   }
 };
 
+const deleteUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (parseInt(id, 10) === parseInt(req.user.id, 10)) {
+      throw new AppError('Forbidden: Cannot delete your own account', 403);
+    }
+
+    const result = await db.query(
+      'DELETE FROM users WHERE id = $1 RETURNING id',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      throw new AppError('User not found', 404);
+    }
+
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getUsers,
   createUser,
   updateUser,
   deactivateUser,
+  deleteUser,
 };

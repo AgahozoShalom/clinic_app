@@ -37,7 +37,6 @@ export function Topbar({ onMenuClick }) {
   if (isAdmin) {
     links.push({ to: '/admin/dashboard', icon: Home, label: 'Home', color: 'text-purple-500' })
     links.push({ to: '/students', icon: Users, label: 'Students', color: 'text-blue-500' })
-    links.push({ to: '/cases', icon: FolderOpen, label: 'Cases', badge: openCasesCount, color: 'text-red-500' })
     links.push({ to: '/admin/staff', icon: Users, label: 'Staff', color: 'text-gray-500' })
   } else if (isNurse) {
     links.push({ to: '/nurse/dashboard', icon: Home, label: 'Home', color: 'text-purple-500' })
