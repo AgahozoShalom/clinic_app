@@ -14,6 +14,7 @@ const medicationsRoutes = require('./routes/medications.routes');
 const transfersRoutes = require('./routes/transfers.routes');
 const transfersRootRoutes = require('./routes/transfersRoot.routes');
 const usersRoutes = require('./routes/users.routes');
+const statsRoutes = require('./routes/stats.routes');
 
 const app = express();
 
@@ -51,6 +52,7 @@ apiRouter.use('/cases/:id/transfer', transfersRoutes);
 apiRouter.use('/lab-tests', labTestsRootRoutes);
 apiRouter.use('/transfers', transfersRootRoutes);
 apiRouter.use('/users', usersRoutes);
+apiRouter.use('/stats', statsRoutes);
 
 app.use('/api/v1', apiRouter);
 

@@ -2,6 +2,7 @@ import React, { useState, useRef, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getStudents, uploadStudents, deleteStudent, deleteAllStudents } from '@/api/students.api'
 import { getCases } from '@/api/cases.api'
+import { getDashboardStats } from '@/api/stats.api'
 import { LoadingRows } from '@/components/shared/LoadingRows'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { Button } from '@/components/ui/button'
@@ -36,6 +37,11 @@ export function StudentsPage() {
   const { data: cases } = useQuery({
     queryKey: ['cases', { limit: 'all' }],
     queryFn: () => getCases({ limit: 'all' })
+  })
+
+  const { data: stats } = useQuery({
+    queryKey: ['dashboardStats'],
+    queryFn: getDashboardStats
   })
 
   const uploadMutation = useMutation({
@@ -87,10 +93,10 @@ export function StudentsPage() {
   }
 
   // Stats computation
-  const closedCasesCount = cases?.filter(c => c.status === 'closed')?.length || 0;
-  const openCasesCount = cases?.filter(c => c.status === 'open')?.length || 0;
-  const activeStudentsCount = students?.length || 0;
-  const seenTodayCount = cases?.filter(c => new Date(c.created_at).toDateString() === new Date().toDateString())?.length || 0;
+  const closedCasesCount = stats?.closedCasesCount || 0;
+  const openCasesCount = stats?.openCasesCount || 0;
+  const activeStudentsCount = stats?.activeStudentsCount || 0;
+  const seenTodayCount = stats?.seenTodayCount || 0;
 
   // Pagination logic
   const paginatedStudents = useMemo(() => {
