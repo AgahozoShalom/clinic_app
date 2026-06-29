@@ -4,7 +4,7 @@ const { AppError } = require('../middlewares/errorHandler');
 const getCaseDetails = async (caseId) => {
   const caseResult = await db.query(`
     SELECT
-      c.id AS case_id, c.status, c.nurse_notes, c.complaint, c.temperature, c.blood_pressure, c.heart_rate, c.respiratory_rate, c.severity, c.needs_doctor, c.created_at, c.closed_at,
+      c.id AS case_id, c.status, c.nurse_notes, c.complaint, c.temperature, c.blood_pressure, c.heart_rate, c.respiratory_rate, c.severity, c.needs_doctor, c.needs_follow_up, c.created_at, c.closed_at,
       s.id AS "student.id", s.admission_code AS "student.admission_code", s.first_name AS "student.first_name",
       s.last_name AS "student.last_name", s.grade AS "student.grade", s.class AS "student.class",
       s.mother_name AS "student.mother_name", s.mother_phone AS "student.mother_phone",
@@ -55,6 +55,7 @@ const getCaseDetails = async (caseId) => {
     respiratory_rate: row.respiratory_rate,
     severity: row.severity,
     needs_doctor: row.needs_doctor,
+    needs_follow_up: row.needs_follow_up,
     created_at: row.created_at,
     closed_at: row.closed_at,
     opened_by: row.opened_by,

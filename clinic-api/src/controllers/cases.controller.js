@@ -92,7 +92,7 @@ const closeCase = async (req, res, next) => {
     }
 
     const result = await db.query(
-      'UPDATE cases SET status = $1, closed_by = $2, closed_at = NOW() WHERE id = $3 RETURNING id, status, closed_by, closed_at',
+      'UPDATE cases SET status = $1, needs_follow_up = false, closed_by = $2, closed_at = NOW() WHERE id = $3 RETURNING id, status, closed_by, closed_at',
       ['closed', req.user.id, id]
     );
 
@@ -214,12 +214,9 @@ const toggleFollowUp = async (req, res, next) => {
       throw new AppError('Conflict: Follow up can only be set on closed cases', 409);
     }
 
-    const currentStatus = caseCheck.rows[0].needs_follow_up;
-    const newStatus = !currentStatus;
-
     const result = await db.query(
-      'UPDATE cases SET needs_follow_up = $1, status = CASE WHEN $1 = true THEN \'open\' ELSE status END, updated_at = NOW() WHERE id = $2 RETURNING id, needs_follow_up, status',
-      [newStatus, id]
+      'UPDATE cases SET needs_follow_up = true, status = \'open\', updated_at = NOW() WHERE id = $1 RETURNING id, needs_follow_up, status',
+      [id]
     );
 
     res.status(200).json({ status: 'success', data: result.rows[0] });

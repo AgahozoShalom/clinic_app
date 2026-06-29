@@ -8,8 +8,8 @@ import { LoadingRows } from '@/components/shared/LoadingRows'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { useNavigate } from 'react-router-dom'
 import { formatRelative } from '@/utils/formatDate'
-import { AlertCircle, ClipboardList } from 'lucide-react'
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
+import { AlertCircle, ClipboardList, TrendingUp } from 'lucide-react'
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
 
 export function AdminDashboard() {
   const navigate = useNavigate()
@@ -25,13 +25,13 @@ export function AdminDashboard() {
   const isLoadingStats = load1 || load2 || load4 || load5 || load6
 
   const casesData = [
-    { name: 'Open Cases', value: openCases?.length || 0, color: '#f59e0b' },
-    { name: 'Closed Today', value: closedToday?.length || 0, color: '#10b981' }
+    { name: 'Open Cases', value: openCases?.length || 0, color: '#E09C46' },
+    { name: 'Closed Today', value: closedToday?.length || 0, color: '#4A8060' }
   ]
 
   const opsData = [
-    { name: 'Active Staff', value: activeStaff?.length || 0, color: '#3b82f6' },
-    { name: 'Pending Labs', value: pendingLabs?.length || 0, color: '#8b5cf6' }
+    { name: 'Active Staff', value: activeStaff?.length || 0, color: '#6D8662' },
+    { name: 'Pending Labs', value: pendingLabs?.length || 0, color: '#2E5C40' }
   ]
 
   return (
@@ -47,66 +47,100 @@ export function AdminDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Cases Chart */}
-        <div className="bg-white rounded-xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-gray-100/80 p-6 flex flex-col items-center">
-          <h3 className="text-[15px] font-medium text-gray-800 self-start mb-4">Cases Overview</h3>
+        <div className="bg-white rounded-xl p-6 shadow-[0_2px_10px_rgb(0,0,0,0.04)] border border-gray-100/50">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-[15px] font-medium text-gray-700">Cases Overview</h3>
+            <TrendingUp className="w-4 h-4 text-[#f59e0b]" />
+          </div>
+
           {isLoadingStats ? (
-            <div className="h-[200px] w-[200px] rounded-full border-8 border-gray-100 animate-pulse"></div>
+             <div className="h-[160px] w-[160px] rounded-full border-8 border-gray-100 animate-pulse mx-auto"></div>
           ) : casesData.every(d => d.value === 0) ? (
-             <div className="h-[200px] flex items-center justify-center text-gray-400 text-sm">No case data</div>
+             <div className="h-[160px] flex items-center justify-center text-gray-400 text-sm">No case data</div>
           ) : (
-            <div className="h-[200px] w-full">
+          <div className="flex items-center h-[160px]">
+            <div className="w-1/2 h-full relative">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={casesData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
+                    innerRadius={50}
+                    outerRadius={70}
+                    paddingAngle={0}
                     dataKey="value"
+                    stroke="none"
                   >
                     {casesData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => [value, 'Cases']} />
-                  <Legend verticalAlign="bottom" height={36}/>
                 </PieChart>
               </ResponsiveContainer>
             </div>
+
+            <div className="w-1/2 flex flex-col justify-center gap-4 pl-4">
+              {casesData.map((entry, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color }}></div>
+                    <span className="text-sm font-medium text-gray-600">{entry.name}</span>
+                  </div>
+                  <span className="text-sm font-semibold text-gray-800">{entry.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
           )}
         </div>
 
         {/* Ops Chart */}
-        <div className="bg-white rounded-xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-gray-100/80 p-6 flex flex-col items-center">
-          <h3 className="text-[15px] font-medium text-gray-800 self-start mb-4">Operations Overview</h3>
+        <div className="bg-white rounded-xl p-6 shadow-[0_2px_10px_rgb(0,0,0,0.04)] border border-gray-100/50">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-[15px] font-medium text-gray-700">Operations Overview</h3>
+            <TrendingUp className="w-4 h-4 text-[#3b82f6]" />
+          </div>
+
           {isLoadingStats ? (
-            <div className="h-[200px] w-[200px] rounded-full border-8 border-gray-100 animate-pulse"></div>
+             <div className="h-[160px] w-[160px] rounded-full border-8 border-gray-100 animate-pulse mx-auto"></div>
           ) : opsData.every(d => d.value === 0) ? (
-             <div className="h-[200px] flex items-center justify-center text-gray-400 text-sm">No operations data</div>
+             <div className="h-[160px] flex items-center justify-center text-gray-400 text-sm">No operations data</div>
           ) : (
-            <div className="h-[200px] w-full">
+          <div className="flex items-center h-[160px]">
+            <div className="w-1/2 h-full relative">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={opsData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
+                    innerRadius={50}
+                    outerRadius={70}
+                    paddingAngle={0}
                     dataKey="value"
+                    stroke="none"
                   >
                     {opsData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => [value, 'Total']} />
-                  <Legend verticalAlign="bottom" height={36}/>
                 </PieChart>
               </ResponsiveContainer>
             </div>
+
+            <div className="w-1/2 flex flex-col justify-center gap-4 pl-4">
+              {opsData.map((entry, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color }}></div>
+                    <span className="text-sm font-medium text-gray-600">{entry.name}</span>
+                  </div>
+                  <span className="text-sm font-semibold text-gray-800">{entry.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
           )}
         </div>
       </div>

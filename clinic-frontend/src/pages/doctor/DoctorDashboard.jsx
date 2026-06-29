@@ -41,15 +41,15 @@ export function DoctorDashboard() {
   ];
 
   // Lab Dependencies Data
-  const labPending = openCases?.filter(c => c.lab_status === 'pending').length || 0;
-  const labCompleted = openCases?.filter(c => c.lab_status === 'completed').length || 0;
-  const noLabs = openCases?.filter(c => !c.lab_status || c.lab_status === 'none').length || 0;
+  const labPending = openCases?.filter(c => c.lab_status === 'Pending').length || 0;
+  const labCompleted = openCases?.filter(c => c.lab_status === 'Ready').length || 0;
+  const noLabs = openCases?.filter(c => !c.lab_status || c.lab_status === 'N/A').length || 0;
 
   const hasLabData = labPending > 0 || labCompleted > 0 || noLabs > 0;
   const labData = [
     { name: 'Pending Labs', value: labPending || (hasLabData ? 0 : 1), color: '#A855F7' }, // purple-500
     { name: 'Labs Completed', value: labCompleted || (hasLabData ? 0 : 1), color: '#3B82F6' }, // blue-500
-    { name: 'No Labs', value: noLabs || (hasLabData ? 0 : 1), color: '#9CA3AF' } // gray-400
+    { name: 'No Labs', value: noLabs || (hasLabData ? 0 : 1), color: '#14B8A6' } // teal-500
   ];
 
   return (
@@ -180,7 +180,7 @@ export function DoctorDashboard() {
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#9CA3AF]"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#14B8A6]"></div>
                   <span className="text-sm font-medium text-gray-600">No Labs</span>
                 </div>
                 <span className="text-sm font-semibold text-gray-800">{noLabs}</span>
