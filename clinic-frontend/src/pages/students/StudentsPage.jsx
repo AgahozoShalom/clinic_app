@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getStudents, uploadStudents, deleteStudent, deleteAllStudents } from '@/api/students.api'
-import { getDashboardStats } from '@/api/cases.api'
+import { getDashboardStats } from '@/api/stats.api'
 import { LoadingRows } from '@/components/shared/LoadingRows'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { Button } from '@/components/ui/button'
@@ -21,7 +21,7 @@ export function StudentsPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingStudent, setEditingStudent] = useState(null)
-  
+
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(10)
 
@@ -103,7 +103,7 @@ export function StudentsPage() {
 
   return (
     <div className="space-y-8 max-w-[1400px] w-full p-4 sm:p-6 lg:p-8 font-sans">
-      
+
       {/* Title */}
       <div>
         <h1 className="text-[28px] font-normal text-gray-800 tracking-tight">Profiles</h1>
@@ -120,7 +120,7 @@ export function StudentsPage() {
             <p className="text-[32px] font-normal leading-none text-gray-800">{closedCasesCount}</p>
           </div>
         </div>
-        
+
         <div className="bg-white rounded-xl p-6 shadow-[0_2px_10px_rgb(0,0,0,0.04)] border border-gray-100/50 flex flex-col gap-6">
           <div className="w-12 h-12 rounded-xl bg-[#FFF5F5] flex items-center justify-center text-[#FF6B6B]">
             <MonitorSmartphone className="w-6 h-6" />
@@ -173,13 +173,13 @@ export function StudentsPage() {
                 {activeStudentsCount}
               </span>
             </div>
-            
+
             <div className="flex items-center gap-3 w-full sm:w-auto">
               <div className="relative w-full sm:w-72">
                 <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input 
-                  type="text" 
-                  placeholder="Search" 
+                <input
+                  type="text"
+                  placeholder="Search"
                   value={search}
                   onChange={e => {
                     setSearch(e.target.value)
@@ -188,7 +188,7 @@ export function StudentsPage() {
                   className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-gray-400"
                 />
               </div>
-              
+
               {isAdmin && (
                 <>
                   <input
@@ -202,7 +202,7 @@ export function StudentsPage() {
                     }}
                   />
                   {/* Subtle upload button to keep functionality without cluttering */}
-                  <button 
+                  <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploadMutation.isPending}
                     className="flex items-center justify-center w-9 h-9 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors"
@@ -211,7 +211,7 @@ export function StudentsPage() {
                     {uploadMutation.isPending ? <Loader2 className="w-[15px] h-[15px] animate-spin" /> : <Upload className="w-[15px] h-[15px]" />}
                   </button>
                   {/* Subtle delete all button */}
-                  <button 
+                  <button
                     onClick={handleDeleteAll}
                     disabled={deleteAllMutation.isPending}
                     className="flex items-center justify-center w-9 h-9 border border-gray-200 rounded-lg text-red-400 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors"
@@ -219,8 +219,8 @@ export function StudentsPage() {
                   >
                     <Trash2 className="w-[15px] h-[15px]" />
                   </button>
-                  
-                  <button 
+
+                  <button
                     onClick={() => { setEditingStudent(null); setIsModalOpen(true); }}
                     className="flex items-center gap-2 bg-[#0052CC] hover:bg-[#0047B3] text-white px-5 py-2 rounded-lg text-[13px] font-medium whitespace-nowrap transition-colors shadow-sm"
                   >
@@ -263,7 +263,7 @@ export function StudentsPage() {
                         <td className="px-6 py-4 text-gray-500 text-[13px]">{s.gender}</td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-4 opacity-70 group-hover:opacity-100 transition-opacity">
-                            <button 
+                            <button
                               onClick={() => navigate(`/students/${s.id}`)}
                               className="text-gray-700 hover:text-black transition-colors"
                               title="View History"
@@ -272,15 +272,15 @@ export function StudentsPage() {
                             </button>
                             {isAdmin && (
                               <>
-                                <button 
+                                <button
                                   onClick={() => { setEditingStudent(s); setIsModalOpen(true); }}
                                   className="text-[#0052CC] hover:text-[#003D99] transition-colors"
                                   title="Edit Student"
                                 >
                                   <Edit2 className="w-[16px] h-[16px]" />
                                 </button>
-                                <button 
-                                  onClick={() => handleDelete(s.id)} 
+                                <button
+                                  onClick={() => handleDelete(s.id)}
                                   disabled={deleteMutation.isPending}
                                   className="text-[#FF6B6B] hover:text-red-600 transition-colors"
                                   title="Delete Student"
@@ -297,14 +297,14 @@ export function StudentsPage() {
                 </table>
               )}
             </div>
-            
+
             {/* Pagination */}
             {students?.length > 0 && (
               <div className="px-6 py-4 border-t border-gray-100 bg-white flex flex-col sm:flex-row items-center justify-between sm:justify-end gap-4 text-[13px] text-gray-500">
                 <div className="flex items-center gap-2">
                   <span>Rows per page</span>
-                  <select 
-                    value={rowsPerPage} 
+                  <select
+                    value={rowsPerPage}
                     onChange={(e) => {
                       setRowsPerPage(Number(e.target.value))
                       setCurrentPage(1)
@@ -316,32 +316,32 @@ export function StudentsPage() {
                     <option value={50}>50</option>
                   </select>
                 </div>
-                
+
                 <div className="flex items-center gap-4">
                   <span>Page {currentPage} of {totalPages}</span>
                   <div className="flex items-center gap-1">
-                    <button 
+                    <button
                       onClick={() => setCurrentPage(1)}
                       disabled={currentPage === 1}
                       className="p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-transparent"
                     >
                       <ChevronsLeft className="w-[18px] h-[18px]" />
                     </button>
-                    <button 
+                    <button
                       onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                       disabled={currentPage === 1}
                       className="p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-transparent"
                     >
                       <ChevronLeft className="w-[18px] h-[18px]" />
                     </button>
-                    <button 
+                    <button
                       onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                       disabled={currentPage === totalPages}
                       className="p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-transparent"
                     >
                       <ChevronRight className="w-[18px] h-[18px]" />
                     </button>
-                    <button 
+                    <button
                       onClick={() => setCurrentPage(totalPages)}
                       disabled={currentPage === totalPages}
                       className="p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-transparent"

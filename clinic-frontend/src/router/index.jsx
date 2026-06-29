@@ -66,7 +66,7 @@ export const router = createBrowserRouter([
           // Shared Cases Routes
           {
             path: 'cases',
-            element: <ProtectedRoute allowedRoles={['nurse', 'doctor', 'admin']} />,
+            element: <ProtectedRoute allowedRoles={['nurse', 'doctor']} />,
             children: [
               { index: true, element: <CasesPage /> }
             ]
