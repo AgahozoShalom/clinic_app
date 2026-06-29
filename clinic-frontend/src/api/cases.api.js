@@ -5,6 +5,11 @@ export const getCases = async (params) => {
   return response.data.data || response.data
 }
 
+export const getDashboardStats = async () => {
+  const response = await api.get('/cases/stats/dashboard')
+  return response.data
+}
+
 export const getCaseById = async (id) => {
   const response = await api.get(`/cases/${id}`)
   return response.data

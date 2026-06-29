@@ -218,11 +218,41 @@ const toggleFollowUp = async (req, res, next) => {
     const newStatus = !currentStatus;
 
     const result = await db.query(
-      'UPDATE cases SET needs_follow_up = $1, updated_at = NOW() WHERE id = $2 RETURNING id, needs_follow_up',
+      'UPDATE cases SET needs_follow_up = $1, status = CASE WHEN $1 = true THEN \'open\' ELSE status END, updated_at = NOW() WHERE id = $2 RETURNING id, needs_follow_up, status',
       [newStatus, id]
     );
 
     res.status(200).json({ status: 'success', data: result.rows[0] });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getDashboardStats = async (req, res, next) => {
+  try {
+    const client = await db.pool.connect();
+    try {
+      const closedRes = await client.query(`SELECT COUNT(*) FROM cases WHERE status = 'closed'`);
+      const closedCasesCount = parseInt(closedRes.rows[0].count, 10);
+
+      const openRes = await client.query(`SELECT COUNT(*) FROM cases WHERE status IN ('open', 'pending_transfer')`);
+      const openCasesCount = parseInt(openRes.rows[0].count, 10);
+
+      const studentsRes = await client.query('SELECT COUNT(*) FROM students');
+      const activeStudentsCount = parseInt(studentsRes.rows[0].count, 10);
+
+      const todayRes = await client.query(`SELECT COUNT(*) FROM cases WHERE DATE(created_at) = CURRENT_DATE`);
+      const seenTodayCount = parseInt(todayRes.rows[0].count, 10);
+
+      res.status(200).json({
+        closedCasesCount,
+        openCasesCount,
+        activeStudentsCount,
+        seenTodayCount
+      });
+    } finally {
+      client.release();
+    }
   } catch (err) {
     next(err);
   }
@@ -239,4 +269,5 @@ module.exports = {
   addMedication,
   escalateCase,
   toggleFollowUp,
+  getDashboardStats,
 };

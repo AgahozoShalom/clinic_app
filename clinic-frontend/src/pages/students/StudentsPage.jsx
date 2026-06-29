@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getStudents, uploadStudents, deleteStudent, deleteAllStudents } from '@/api/students.api'
-import { getCases } from '@/api/cases.api'
+import { getDashboardStats } from '@/api/cases.api'
 import { LoadingRows } from '@/components/shared/LoadingRows'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { Button } from '@/components/ui/button'
@@ -33,9 +33,9 @@ export function StudentsPage() {
     queryFn: () => getStudents({ q: debouncedSearch, limit: 'all' })
   })
 
-  const { data: cases } = useQuery({
-    queryKey: ['cases', { limit: 'all' }],
-    queryFn: () => getCases({ limit: 'all' })
+  const { data: stats } = useQuery({
+    queryKey: ['dashboardStats'],
+    queryFn: getDashboardStats
   })
 
   const uploadMutation = useMutation({
@@ -87,10 +87,10 @@ export function StudentsPage() {
   }
 
   // Stats computation
-  const closedCasesCount = cases?.filter(c => c.status === 'closed')?.length || 0;
-  const openCasesCount = cases?.filter(c => c.status === 'open')?.length || 0;
-  const activeStudentsCount = students?.length || 0;
-  const seenTodayCount = cases?.filter(c => new Date(c.created_at).toDateString() === new Date().toDateString())?.length || 0;
+  const closedCasesCount = stats?.closedCasesCount || 0;
+  const openCasesCount = stats?.openCasesCount || 0;
+  const activeStudentsCount = stats?.activeStudentsCount || students?.length || 0;
+  const seenTodayCount = stats?.seenTodayCount || 0;
 
   // Pagination logic
   const paginatedStudents = useMemo(() => {
@@ -126,7 +126,7 @@ export function StudentsPage() {
             <MonitorSmartphone className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-[13px] text-gray-400 font-medium tracking-wide mb-1">My open cases</p>
+            <p className="text-[13px] text-gray-400 font-medium tracking-wide mb-1">All Open Cases</p>
             <p className="text-[32px] font-normal leading-none text-gray-800">{openCasesCount}</p>
           </div>
         </div>

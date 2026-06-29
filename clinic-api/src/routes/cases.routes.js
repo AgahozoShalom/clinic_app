@@ -7,6 +7,7 @@ const { createCaseSchema, createFindingSchema, createMedicationSchema, createLab
 
 router.post('/', authorize('nurse'), validate(createCaseSchema), casesController.createCase);
 router.get('/', authorize('nurse', 'doctor', 'lab_technician', 'admin'), casesController.getCases);
+router.get('/stats/dashboard', authorize('nurse', 'doctor', 'admin'), casesController.getDashboardStats);
 router.get('/queue/open', authorize('nurse'), casesController.getOpenQueue);
 router.get('/:id', authorize('nurse', 'doctor', 'lab_technician', 'admin'), casesController.getCaseById);
 router.patch('/:id/close', authorize('nurse', 'doctor'), casesController.closeCase);
