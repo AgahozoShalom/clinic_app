@@ -17,8 +17,8 @@ const LAB_CATEGORIES = [
     id: 'hematology',
     name: 'Hematology',
     tests: [
-      'Full Blood Count (FBC)', 'White Blood Cells (WBC)', 'Lymphocytes (LYM)', 'Granulocytes (GRAN)', 
-      'MID', 'Red Blood Cells (RBC)', 'Hemoglobin (HGB)', 'Hematocrit (HCT)', 'Mean Corpuscular Volume (MCV)', 
+      'Full Blood Count (FBC)', 'White Blood Cells (WBC)', 'Lymphocytes (LYM)', 'Granulocytes (GRAN)',
+      'MID', 'Red Blood Cells (RBC)', 'Hemoglobin (HGB)', 'Hematocrit (HCT)', 'Mean Corpuscular Volume (MCV)',
       'Platelets (PLT)', 'Bleeding Time (BT/BS)', 'Clotting Time (TC/CT)', 'ESR (VS/ESR)', 'Blood Group', 'Rhesus Factor (Rh)'
     ]
   },
@@ -26,7 +26,7 @@ const LAB_CATEGORIES = [
     id: 'urine',
     name: 'Urine Chemistry & Bacteriology',
     tests: [
-      'Albuminuria', 'Glucosuria', 'Ketone Bodies', 'Blood', 'pH', 'Leucocyte', 'Bilirubinuria', 
+      'Albuminuria', 'Glucosuria', 'Ketone Bodies', 'Blood', 'pH', 'Leucocyte', 'Bilirubinuria',
       'Urobilinogen', 'Density', 'Specific Gravity', 'Appearance (ECBU)', 'Cytology (ECBU)', 'Gram Stain (ECBU)'
     ]
   },
@@ -34,8 +34,8 @@ const LAB_CATEGORIES = [
     id: 'biochemistry',
     name: 'Blood Biochemistry',
     tests: [
-      'Random Glucose', 'Urea', 'Creatinine', 'AST (SGOT)', 'ALT (SGPT)', 'Gamma GT', 'Direct Bilirubin', 
-      'Total Bilirubin', 'Alkaline Phosphatase', 'Albumin', 'Total Cholesterol', 'HDL Cholesterol', 
+      'Random Glucose', 'Urea', 'Creatinine', 'AST (SGOT)', 'ALT (SGPT)', 'Gamma GT', 'Direct Bilirubin',
+      'Total Bilirubin', 'Alkaline Phosphatase', 'Albumin', 'Total Cholesterol', 'HDL Cholesterol',
       'LDL Cholesterol', 'Triglycerides', 'Uric Acid', 'Amylase', 'Lipase'
     ]
   },
@@ -43,7 +43,7 @@ const LAB_CATEGORIES = [
     id: 'serology',
     name: 'Serology',
     tests: [
-      'HBsAg', 'HCV Antibody', 'HIV', 'COVID-19', 'Pregnancy Test (Urine)', 'Pregnancy Test (Blood)', 
+      'HBsAg', 'HCV Antibody', 'HIV', 'COVID-19', 'Pregnancy Test (Urine)', 'Pregnancy Test (Blood)',
       'Syphilis', 'TPHA', 'Streptococci', 'ASLO', 'H. Pylori (Blood)', 'H. Pylori (Stool)', 'CRP', 'Arthritis Test'
     ]
   },
@@ -51,7 +51,7 @@ const LAB_CATEGORIES = [
     id: 'parasitology',
     name: 'Parasitology & Bacteriology',
     tests: [
-      'Giemsa (Blood)', 'Malaria Antigen (Blood)', 'Macroscopic (Stool)', 'Microscopic (Stool)', 
+      'Giemsa (Blood)', 'Malaria Antigen (Blood)', 'Macroscopic (Stool)', 'Microscopic (Stool)',
       'Cytology (FY/FU)', 'Gram Stain (FY/FU)'
     ]
   }
@@ -67,7 +67,7 @@ export function CaseDetail() {
 
   const [findingsDialog, setFindingsDialog] = useState(false)
   const [findingsText, setFindingsText] = useState('')
-  
+
   const [transferDialog, setTransferDialog] = useState(false)
   const [hospital, setHospital] = useState('')
   const [reason, setReason] = useState('')
@@ -171,7 +171,7 @@ export function CaseDetail() {
     timeline.push(...c.findings.map(f => ({ ...f, _type: 'finding', _date: new Date(f.created_at) })))
   }
   if (c.lab_tests) {
-    timeline.push(...c.lab_tests.map(l => ({ ...l, _type: 'lab_test', _date: new Date(l.created_at) })))
+    timeline.push(...c.lab_tests.map(l => ({ ...l, _type: 'lab_test', _date: new Date(l.requested_at) })))
   }
   if (c.medications) {
     timeline.push(...c.medications.map(m => ({ ...m, _type: 'medication', _date: new Date(m.prescribed_at) })))
@@ -188,7 +188,7 @@ export function CaseDetail() {
 
   return (
     <div className="space-y-6 max-w-[1400px] w-full p-4 sm:p-6 lg:p-8 font-sans mx-auto">
-      
+
       {/* Header Area */}
       <div className="flex items-center gap-4 mb-2">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-400 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors">
@@ -205,7 +205,7 @@ export function CaseDetail() {
 
       {/* Action Bar Card */}
       <div className="bg-white rounded-xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-gray-100/80 p-4 px-6 flex flex-wrap gap-3 items-center">
-        <button 
+        <button
           onClick={() => navigate(`/students/${c.student.id}`)}
           className="flex items-center gap-2 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors shadow-sm"
         >
@@ -215,23 +215,23 @@ export function CaseDetail() {
 
         {isOpen && (isDoctor || isNurse) && (
           <>
-            <button 
+            <button
               onClick={() => setFindingsDialog(true)}
               className="flex items-center gap-2 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors shadow-sm"
             >
               <FileText className="w-4 h-4 text-blue-500" />
               Clinical Findings
             </button>
-            
-            <button 
+
+            <button
               onClick={() => setMedicationDialog(true)}
               className="flex items-center gap-2 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors shadow-sm"
             >
               <Pill className="w-4 h-4 text-green-500" />
               Prescribe Medication
             </button>
-            
-            <button 
+
+            <button
               onClick={() => setLabTestDialog(true)}
               className="flex items-center gap-2 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors shadow-sm"
             >
@@ -240,7 +240,7 @@ export function CaseDetail() {
             </button>
 
             {isNurse && (
-              <button 
+              <button
                 onClick={() => setEscalateDialog(true)}
                 disabled={disableEscalate}
                 title={disableEscalate ? "Cannot escalate before lab results are ready" : ""}
@@ -252,7 +252,7 @@ export function CaseDetail() {
             )}
 
             {isDoctor && (
-              <button 
+              <button
                 onClick={() => setTransferDialog(true)}
                 className="flex items-center gap-2 bg-white border border-red-200 hover:border-red-300 hover:bg-red-50 hover:text-red-700 text-gray-700 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors shadow-sm"
               >
@@ -263,7 +263,7 @@ export function CaseDetail() {
 
             <div className="flex-1"></div> {/* Spacer */}
 
-            <button 
+            <button
               onClick={() => closeMutation.mutate(id)}
               disabled={disableClose}
               title={disableClose ? "Cannot close case with pending labs or escalation" : (c.transfer ? "Only close case once student comes back" : "")}
@@ -278,14 +278,13 @@ export function CaseDetail() {
         {!isOpen && (isDoctor || isNurse) && (
           <>
             <div className="flex-1"></div> {/* Spacer */}
-            <button 
+            <button
               onClick={() => followUpMutation.mutate()}
               disabled={followUpMutation.isPending}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors shadow-sm ${
-                c.needs_follow_up 
-                  ? 'bg-yellow-100 text-yellow-800 border border-yellow-200 hover:bg-yellow-200' 
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors shadow-sm ${c.needs_follow_up
+                  ? 'bg-yellow-100 text-yellow-800 border border-yellow-200 hover:bg-yellow-200'
                   : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
-              }`}
+                }`}
             >
               {followUpMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Activity className="w-4 h-4" />}
               {c.needs_follow_up ? 'Follow-up Needed' : 'Flag for Follow-up'}
@@ -295,10 +294,10 @@ export function CaseDetail() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
+
         {/* LEFT COLUMN: Overview & Context */}
         <div className="lg:col-span-1 space-y-6">
-          
+
           {/* Student Info Card */}
           <div className="bg-white rounded-xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-gray-100/80 overflow-hidden">
             <div className="p-5 border-b border-gray-100/80">
@@ -364,7 +363,7 @@ export function CaseDetail() {
 
         {/* RIGHT COLUMN: Clinical Activity */}
         <div className="lg:col-span-2 space-y-6">
-          
+
           {/* Chief Complaint Card */}
           <div className="bg-white rounded-xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-gray-100/80 overflow-hidden">
             <div className="p-5 border-b border-gray-100/80">
@@ -384,7 +383,7 @@ export function CaseDetail() {
                 <Stethoscope className="w-4 h-4" /> Clinical Feed
               </h3>
             </div>
-            
+
             <div className="bg-white">
               {timeline.length > 0 ? (
                 <div className="divide-y divide-gray-100">
@@ -419,7 +418,7 @@ export function CaseDetail() {
                                 <span className="font-semibold text-gray-800 text-[14px]">Lab Test: {item.test_name}</span>
                                 <StatusPill status={item.status} className="scale-90 origin-left" />
                               </div>
-                              <div className="text-[12px] text-gray-400">{formatRelative(item.created_at)}</div>
+                              <div className="text-[12px] text-gray-400">{formatRelative(item.requested_at)}</div>
                             </div>
                             {item.notes && (
                               <div className="text-[13px] text-gray-600 bg-gray-50/50 border border-gray-100 p-2.5 rounded-lg mb-2">
@@ -431,6 +430,7 @@ export function CaseDetail() {
                                 {item.results}
                               </div>
                             )}
+                            <div className="text-[12px] font-medium text-gray-500">Requested by {item.requested_by_name}</div>
                           </div>
                         </div>
                       )
@@ -450,7 +450,7 @@ export function CaseDetail() {
                               <div className="text-[12px] text-gray-400">{formatRelative(item.prescribed_at)}</div>
                             </div>
                             {item.instructions && <div className="text-[14px] text-gray-600 mb-2">{item.instructions}</div>}
-                            <div className="text-[12px] font-medium text-gray-500">Prescribed by {item.prescribed_by_role}</div>
+                            <div className="text-[12px] font-medium text-gray-500">Prescribed by {item.prescribed_by_name}</div>
                           </div>
                         </div>
                       )
@@ -522,7 +522,7 @@ export function CaseDetail() {
               <DialogDescription className="text-[13px] text-gray-600 mt-1">Record new clinical observations for this case.</DialogDescription>
             </div>
           </div>
-          
+
           <div className="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-8">
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-[15px] font-medium text-gray-800">
@@ -531,9 +531,9 @@ export function CaseDetail() {
               </div>
               <div className="ml-8">
                 <label className="block text-[13px] font-medium text-gray-800 mb-1.5">Clinical Notes <span className="text-red-500">*</span></label>
-                <Textarea 
-                  value={findingsText} 
-                  onChange={e => setFindingsText(e.target.value)} 
+                <Textarea
+                  value={findingsText}
+                  onChange={e => setFindingsText(e.target.value)}
                   placeholder="What are your clinical findings?"
                   className="min-h-[120px] text-[14px] resize-none border-black/15 bg-white/60 backdrop-blur-sm focus:border-[#0052CC] focus:bg-white/60 focus:ring-1 focus:ring-[#0052CC] rounded-xl"
                 />
@@ -542,15 +542,15 @@ export function CaseDetail() {
           </div>
 
           <div className="p-6 border-t border-white/40 bg-white/30 flex justify-end gap-3 shrink-0">
-            <button 
-              className="px-5 py-2 text-[14px] font-medium text-gray-700 hover:text-gray-900 hover:bg-white/50 bg-white/40 border border-white/50 rounded-lg transition-colors shadow-sm" 
+            <button
+              className="px-5 py-2 text-[14px] font-medium text-gray-700 hover:text-gray-900 hover:bg-white/50 bg-white/40 border border-white/50 rounded-lg transition-colors shadow-sm"
               onClick={() => setFindingsDialog(false)}
             >
               Cancel
             </button>
-            <button 
-              className="px-6 py-2 text-[14px] font-medium text-white bg-[#0052CC]/90 hover:bg-[#0047B3] disabled:opacity-50 backdrop-blur-sm rounded-lg shadow-sm transition-colors flex items-center gap-2" 
-              onClick={() => findingsMutation.mutate({ id, notes: findingsText })} 
+            <button
+              className="px-6 py-2 text-[14px] font-medium text-white bg-[#0052CC]/90 hover:bg-[#0047B3] disabled:opacity-50 backdrop-blur-sm rounded-lg shadow-sm transition-colors flex items-center gap-2"
+              onClick={() => findingsMutation.mutate({ id, notes: findingsText })}
               disabled={!findingsText}
             >
               Save Findings
@@ -576,15 +576,15 @@ export function CaseDetail() {
               </div>
               <div className="ml-8">
                 <label className="block text-[13px] font-medium text-gray-800 mb-1.5">Hospital Name <span className="text-red-500">*</span></label>
-                <Input 
-                  value={hospital} 
-                  onChange={e => setHospital(e.target.value)} 
-                  placeholder="e.g. District Hospital" 
-                  className="text-[14px] border-black/15 bg-white/60 backdrop-blur-sm focus:border-[#0052CC] focus:bg-white/60 focus:ring-1 focus:ring-[#0052CC] rounded-xl h-11" 
+                <Input
+                  value={hospital}
+                  onChange={e => setHospital(e.target.value)}
+                  placeholder="e.g. District Hospital"
+                  className="text-[14px] border-black/15 bg-white/60 backdrop-blur-sm focus:border-[#0052CC] focus:bg-white/60 focus:ring-1 focus:ring-[#0052CC] rounded-xl h-11"
                 />
               </div>
             </div>
-            
+
             <div className="h-px bg-white/40 ml-8"></div>
 
             <div className="space-y-4">
@@ -594,26 +594,26 @@ export function CaseDetail() {
               </div>
               <div className="ml-8">
                 <label className="block text-[13px] font-medium text-gray-800 mb-1.5">Reason for transfer <span className="text-red-500">*</span></label>
-                <Textarea 
-                  value={reason} 
-                  onChange={e => setReason(e.target.value)} 
-                  placeholder="Required care exceeds clinic capabilities..." 
-                  className="min-h-[100px] text-[14px] resize-none border-black/15 bg-white/60 backdrop-blur-sm focus:border-[#0052CC] focus:bg-white/60 focus:ring-1 focus:ring-[#0052CC] rounded-xl" 
+                <Textarea
+                  value={reason}
+                  onChange={e => setReason(e.target.value)}
+                  placeholder="Required care exceeds clinic capabilities..."
+                  className="min-h-[100px] text-[14px] resize-none border-black/15 bg-white/60 backdrop-blur-sm focus:border-[#0052CC] focus:bg-white/60 focus:ring-1 focus:ring-[#0052CC] rounded-xl"
                 />
               </div>
             </div>
           </div>
 
           <div className="p-6 border-t border-white/40 bg-white/30 flex justify-end gap-3 shrink-0">
-            <button 
-              className="px-5 py-2 text-[14px] font-medium text-gray-700 hover:text-gray-900 hover:bg-white/50 bg-white/40 border border-white/50 rounded-lg transition-colors shadow-sm" 
+            <button
+              className="px-5 py-2 text-[14px] font-medium text-gray-700 hover:text-gray-900 hover:bg-white/50 bg-white/40 border border-white/50 rounded-lg transition-colors shadow-sm"
               onClick={() => setTransferDialog(false)}
             >
               Cancel
             </button>
-            <button 
-              className="px-6 py-2 text-[14px] font-medium text-white bg-red-600/90 hover:bg-red-700 disabled:opacity-50 backdrop-blur-sm rounded-lg shadow-sm transition-colors flex items-center gap-2" 
-              onClick={() => transferMutation.mutate({ id, hospital_name: hospital, reason })} 
+            <button
+              className="px-6 py-2 text-[14px] font-medium text-white bg-red-600/90 hover:bg-red-700 disabled:opacity-50 backdrop-blur-sm rounded-lg shadow-sm transition-colors flex items-center gap-2"
+              onClick={() => transferMutation.mutate({ id, hospital_name: hospital, reason })}
               disabled={!hospital || !reason}
             >
               Request Transfer
@@ -640,20 +640,20 @@ export function CaseDetail() {
               <div className="ml-8 grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-[13px] font-medium text-gray-800 mb-1.5">Drug Name <span className="text-red-500">*</span></label>
-                  <Input 
-                    value={drugName} 
-                    onChange={e => setDrugName(e.target.value)} 
-                    placeholder="e.g. Paracetamol" 
-                    className="text-[14px] border-black/15 bg-white/60 backdrop-blur-sm focus:border-[#0052CC] focus:bg-white/60 focus:ring-1 focus:ring-[#0052CC] rounded-xl h-11" 
+                  <Input
+                    value={drugName}
+                    onChange={e => setDrugName(e.target.value)}
+                    placeholder="e.g. Paracetamol"
+                    className="text-[14px] border-black/15 bg-white/60 backdrop-blur-sm focus:border-[#0052CC] focus:bg-white/60 focus:ring-1 focus:ring-[#0052CC] rounded-xl h-11"
                   />
                 </div>
                 <div>
                   <label className="block text-[13px] font-medium text-gray-800 mb-1.5">Dosage <span className="text-red-500">*</span></label>
-                  <Input 
-                    value={dosage} 
-                    onChange={e => setDosage(e.target.value)} 
-                    placeholder="e.g. 500mg" 
-                    className="text-[14px] border-black/15 bg-white/60 backdrop-blur-sm focus:border-[#0052CC] focus:bg-white/60 focus:ring-1 focus:ring-[#0052CC] rounded-xl h-11" 
+                  <Input
+                    value={dosage}
+                    onChange={e => setDosage(e.target.value)}
+                    placeholder="e.g. 500mg"
+                    className="text-[14px] border-black/15 bg-white/60 backdrop-blur-sm focus:border-[#0052CC] focus:bg-white/60 focus:ring-1 focus:ring-[#0052CC] rounded-xl h-11"
                   />
                 </div>
               </div>
@@ -668,26 +668,26 @@ export function CaseDetail() {
               </div>
               <div className="ml-8">
                 <label className="block text-[13px] font-medium text-gray-800 mb-1.5">Usage Instructions</label>
-                <Textarea 
-                  value={instructions} 
-                  onChange={e => setInstructions(e.target.value)} 
-                  placeholder="e.g. Take twice daily after meals..." 
-                  className="min-h-[100px] text-[14px] resize-none border-black/15 bg-white/60 backdrop-blur-sm focus:border-[#0052CC] focus:bg-white/60 focus:ring-1 focus:ring-[#0052CC] rounded-xl" 
+                <Textarea
+                  value={instructions}
+                  onChange={e => setInstructions(e.target.value)}
+                  placeholder="e.g. Take twice daily after meals..."
+                  className="min-h-[100px] text-[14px] resize-none border-black/15 bg-white/60 backdrop-blur-sm focus:border-[#0052CC] focus:bg-white/60 focus:ring-1 focus:ring-[#0052CC] rounded-xl"
                 />
               </div>
             </div>
           </div>
 
           <div className="p-6 border-t border-white/40 bg-white/30 flex justify-end gap-3 shrink-0">
-            <button 
-              className="px-5 py-2 text-[14px] font-medium text-gray-700 hover:text-gray-900 hover:bg-white/50 bg-white/40 border border-white/50 rounded-lg transition-colors shadow-sm" 
+            <button
+              className="px-5 py-2 text-[14px] font-medium text-gray-700 hover:text-gray-900 hover:bg-white/50 bg-white/40 border border-white/50 rounded-lg transition-colors shadow-sm"
               onClick={() => setMedicationDialog(false)}
             >
               Cancel
             </button>
-            <button 
-              className="px-6 py-2 text-[14px] font-medium text-white bg-[#0052CC]/90 hover:bg-[#0047B3] disabled:opacity-50 backdrop-blur-sm rounded-lg shadow-sm transition-colors flex items-center gap-2" 
-              onClick={() => medicationMutation.mutate({ id, drug_name: drugName, dosage, instructions })} 
+            <button
+              className="px-6 py-2 text-[14px] font-medium text-white bg-[#0052CC]/90 hover:bg-[#0047B3] disabled:opacity-50 backdrop-blur-sm rounded-lg shadow-sm transition-colors flex items-center gap-2"
+              onClick={() => medicationMutation.mutate({ id, drug_name: drugName, dosage, instructions })}
               disabled={!drugName || !dosage}
             >
               Prescribe
@@ -698,7 +698,7 @@ export function CaseDetail() {
 
       <Dialog open={labTestDialog} onOpenChange={(open) => {
         setLabTestDialog(open);
-        if(!open) setLabSearch('');
+        if (!open) setLabSearch('');
       }}>
         <DialogContent className="p-0 shadow-2xl rounded-2xl font-sans overflow-hidden max-w-4xl bg-white/95 backdrop-blur-3xl border border-white/60 sm:max-h-[90vh] flex flex-col">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 border-b border-gray-100 bg-white/50 shrink-0 gap-4">
@@ -710,7 +710,7 @@ export function CaseDetail() {
             </div>
             <div className="relative w-full sm:w-72 shrink-0">
               <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <Input 
+              <Input
                 value={labSearch}
                 onChange={e => setLabSearch(e.target.value)}
                 placeholder="Search for tests..."
@@ -724,10 +724,10 @@ export function CaseDetail() {
               {LAB_CATEGORIES.map(category => {
                 const filteredTests = category.tests.filter(t => t.toLowerCase().includes(labSearch.toLowerCase()));
                 if (filteredTests.length === 0) return null;
-                
+
                 const isExpanded = expandedCategories.includes(category.id);
                 const toggleCategory = () => {
-                  setExpandedCategories(prev => 
+                  setExpandedCategories(prev =>
                     prev.includes(category.id) ? prev.filter(id => id !== category.id) : [...prev, category.id]
                   );
                 };
@@ -745,12 +745,12 @@ export function CaseDetail() {
 
                 return (
                   <div key={category.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300">
-                    <button 
+                    <button
                       onClick={toggleCategory}
                       className="w-full flex items-center justify-between p-4 bg-white hover:bg-gray-50/80 transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <div 
+                        <div
                           onClick={toggleAll}
                           className="flex items-center justify-center w-5 h-5 rounded border border-gray-300 text-[#0052CC] hover:border-[#0052CC] transition-colors cursor-pointer bg-white"
                         >
@@ -763,7 +763,7 @@ export function CaseDetail() {
                       </div>
                       {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
                     </button>
-                    
+
                     <div className={`grid grid-cols-1 md:grid-cols-2 gap-2 p-4 pt-0 border-t border-gray-50 transition-all duration-300 ${isExpanded ? 'block' : 'hidden'}`}>
                       {filteredTests.map(test => {
                         const isSelected = selectedTests.includes(test);
@@ -772,12 +772,12 @@ export function CaseDetail() {
                             <div className="flex items-center justify-center w-4 h-4 rounded border border-gray-300 text-[#0052CC]">
                               {isSelected ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4 opacity-50" />}
                             </div>
-                            <input 
-                              type="checkbox" 
+                            <input
+                              type="checkbox"
                               className="hidden"
                               checked={isSelected}
                               onChange={() => {
-                                setSelectedTests(prev => 
+                                setSelectedTests(prev =>
                                   isSelected ? prev.filter(t => t !== test) : [...prev, test]
                                 )
                               }}
@@ -803,7 +803,7 @@ export function CaseDetail() {
                   Clinical Notes
                   <span className="text-[11px] font-normal text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">Optional</span>
                 </h4>
-                <Textarea 
+                <Textarea
                   value={labNotes}
                   onChange={e => setLabNotes(e.target.value)}
                   placeholder="Add any specific instructions or context for the laboratory..."
@@ -814,7 +814,7 @@ export function CaseDetail() {
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                 <h4 className="text-[14px] font-semibold text-gray-800 mb-3">Summary</h4>
                 <div className="text-[13px] text-gray-600 mb-4">
-                  <span className="font-semibold text-[#0052CC] text-xl mr-2">{selectedTests.length}</span> 
+                  <span className="font-semibold text-[#0052CC] text-xl mr-2">{selectedTests.length}</span>
                   tests selected
                 </div>
                 <div className="max-h-[200px] overflow-y-auto custom-scrollbar space-y-1.5 pr-2">
@@ -837,8 +837,8 @@ export function CaseDetail() {
               {selectedTests.length === 0 ? 'Please select at least one test' : 'Ready to submit request'}
             </div>
             <div className="flex gap-3">
-              <button 
-                className="px-5 py-2.5 text-[14px] font-medium text-gray-700 hover:text-gray-900 bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 rounded-xl transition-all shadow-sm" 
+              <button
+                className="px-5 py-2.5 text-[14px] font-medium text-gray-700 hover:text-gray-900 bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 rounded-xl transition-all shadow-sm"
                 onClick={() => {
                   setLabTestDialog(false)
                   setLabSearch('')
@@ -846,9 +846,9 @@ export function CaseDetail() {
               >
                 Cancel
               </button>
-              <button 
-                className="px-6 py-2.5 text-[14px] font-medium text-white bg-[#0052CC] hover:bg-[#0047B3] disabled:opacity-50 disabled:hover:bg-[#0052CC] rounded-xl shadow-sm shadow-[#0052CC]/20 transition-all flex items-center gap-2" 
-                onClick={() => labTestMutation.mutate({ id, test_names: selectedTests, notes: labNotes })} 
+              <button
+                className="px-6 py-2.5 text-[14px] font-medium text-white bg-[#0052CC] hover:bg-[#0047B3] disabled:opacity-50 disabled:hover:bg-[#0052CC] rounded-xl shadow-sm shadow-[#0052CC]/20 transition-all flex items-center gap-2"
+                onClick={() => labTestMutation.mutate({ id, test_names: selectedTests, notes: labNotes })}
                 disabled={selectedTests.length === 0 || labTestMutation.isPending}
               >
                 {labTestMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
@@ -876,25 +876,25 @@ export function CaseDetail() {
               </div>
               <div className="ml-8">
                 <label className="block text-[13px] font-medium text-gray-800 mb-1.5">Reason for escalation</label>
-                <Textarea 
-                  value={escalateNotes} 
-                  onChange={e => setEscalateNotes(e.target.value)} 
-                  placeholder="Explain why the doctor needs to review this case..." 
-                  className="min-h-[120px] text-[14px] resize-none border-black/15 bg-white/60 backdrop-blur-sm focus:border-orange-500 focus:bg-white/60 focus:ring-1 focus:ring-orange-500 rounded-xl" 
+                <Textarea
+                  value={escalateNotes}
+                  onChange={e => setEscalateNotes(e.target.value)}
+                  placeholder="Explain why the doctor needs to review this case..."
+                  className="min-h-[120px] text-[14px] resize-none border-black/15 bg-white/60 backdrop-blur-sm focus:border-orange-500 focus:bg-white/60 focus:ring-1 focus:ring-orange-500 rounded-xl"
                 />
               </div>
             </div>
           </div>
 
           <div className="p-6 border-t border-white/40 bg-white/30 flex justify-end gap-3 shrink-0">
-            <button 
-              className="px-5 py-2 text-[14px] font-medium text-gray-700 hover:text-gray-900 hover:bg-white/50 bg-white/40 border border-white/50 rounded-lg transition-colors shadow-sm" 
+            <button
+              className="px-5 py-2 text-[14px] font-medium text-gray-700 hover:text-gray-900 hover:bg-white/50 bg-white/40 border border-white/50 rounded-lg transition-colors shadow-sm"
               onClick={() => setEscalateDialog(false)}
             >
               Cancel
             </button>
-            <button 
-              className="px-6 py-2 text-[14px] font-medium text-white bg-orange-500/90 hover:bg-orange-600 disabled:opacity-50 backdrop-blur-sm rounded-lg shadow-sm transition-colors flex items-center gap-2" 
+            <button
+              className="px-6 py-2 text-[14px] font-medium text-white bg-orange-500/90 hover:bg-orange-600 disabled:opacity-50 backdrop-blur-sm rounded-lg shadow-sm transition-colors flex items-center gap-2"
               onClick={() => escalateMutation.mutate({ id, notes: escalateNotes })}
             >
               Send to Doctor

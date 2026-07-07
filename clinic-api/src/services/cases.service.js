@@ -16,13 +16,15 @@ const getCaseDetails = async (caseId) => {
         WHERE cf.case_id = c.id
       ) f) AS findings,
       (SELECT COALESCE(JSON_AGG(lt ORDER BY lt.requested_at DESC), '[]') FROM (
-        SELECT lt.id, lt.test_name, lt.status, lt.results, lt.requested_at, lt.fulfilled_at
+        SELECT lt.id, lt.test_name, lt.status, lt.results, lt.requested_at, lt.fulfilled_at, u.name AS requested_by_name
         FROM lab_tests lt
+        LEFT JOIN users u ON u.id = lt.requested_by
         WHERE lt.case_id = c.id
       ) lt) AS lab_tests,
       (SELECT COALESCE(JSON_AGG(m ORDER BY m.prescribed_at DESC), '[]') FROM (
-        SELECT m.id, m.drug_name, m.dosage, m.instructions, m.prescribed_by_role, m.prescribed_at
+        SELECT m.id, m.drug_name, m.dosage, m.instructions, m.prescribed_by_role, m.prescribed_at, u.name AS prescribed_by_name
         FROM medications m
+        LEFT JOIN users u ON u.id = m.prescribed_by
         WHERE m.case_id = c.id
       ) m) AS medications,
       (SELECT ROW_TO_JSON(tr) FROM (
@@ -43,7 +45,7 @@ const getCaseDetails = async (caseId) => {
   }
 
   const row = caseResult.rows[0];
-  
+
   return {
     case_id: row.case_id,
     status: row.status,

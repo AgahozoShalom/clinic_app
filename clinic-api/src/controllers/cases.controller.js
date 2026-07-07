@@ -25,12 +25,19 @@ const createCase = async (req, res, next) => {
 
 const getCases = async (req, res, next) => {
   try {
-    const { status, student_id, page = 1, limit = 20 } = req.query;
+    console.log("getCases called with query:", req.query);
+    const { status, student_id, q, page = 1, limit = 20 } = req.query;
     const offset = (page - 1) * limit;
 
     let queryText = 'SELECT * FROM v_case_summary WHERE 1=1';
     const params = [];
     let paramIndex = 1;
+
+    if (q) {
+      queryText += ` AND (student_full_name ILIKE $${paramIndex} OR family_name ILIKE $${paramIndex})`;
+      params.push(`%${q}%`);
+      paramIndex++;
+    }
 
     if (status) {
       queryText += ` AND status = $${paramIndex++}`;
